@@ -29,6 +29,7 @@ namespace SharpSwift
                 output += ConvertToSwift.SyntaxNode(childClass);
             }
 
+            Console.WriteLine(output);
 
             Console.ReadLine();
         }

@@ -8,9 +8,22 @@ namespace SharpSwift
 {
     class test : ASCIIEncoding
     {
+        private string somdething = "123";
+        private static string _something { get; set; }
+
+        public static string something
+        {
+            get { return "hi"; }
+            set { _something = value; }
+        }
+
         public test(string something)
         {
-            
+            var y = new test("hello");
+            var str = somdething;
+            str = str.Trim('1') + "hello";
+            str += "hi there!";
+            str = "";
         }
     }
 }

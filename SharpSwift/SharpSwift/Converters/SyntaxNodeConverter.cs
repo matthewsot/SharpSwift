@@ -13,11 +13,19 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-
-        [ParsesType(typeof(TypeSyntax))]
-        public static string Type(TypeSyntax node)
+        [ParsesType(typeof (BlockSyntax))]
+        public static string Block(BlockSyntax node, bool includeBraces = true)
         {
-            var typeName = ((PredefinedTypeSyntax)node).Keyword.Text;
+            var output = (includeBraces ? "{\r\n" : "");
+            foreach (var child in node.ChildNodes())
+            {
+                output += SyntaxNode(child);
+            }
+            return output + (includeBraces ? "}\r\n" : "");
+        }
+
+        private static string Type(string typeName)
+        {
             switch (typeName)
             {
                 case "string":
@@ -27,9 +35,21 @@ namespace SharpSwift.Converters
             return typeName;
         }
 
+        [ParsesType(typeof(TypeSyntax))]
+        public static string Type(TypeSyntax node)
+        {
+            var typeName = ((PredefinedTypeSyntax)node).Keyword.Text;
+            return Type(typeName);
+        }
+
         public static string SyntaxNode(SyntaxNode node)
         {
             var nodeType = node.GetType();
+
+            if (node is BlockSyntax)
+            {
+                return Block((BlockSyntax)node);
+            }
 
             var methods = typeof (ConvertToSwift).GetMethods();
             var matchedMethod =
@@ -43,7 +63,7 @@ namespace SharpSwift.Converters
                 return matchedMethod.Invoke(s, new[] { node }).ToString();
             }
 
-            return node.ToString();
+            return node.ToString() + "\r\n";
         }
     }
 }

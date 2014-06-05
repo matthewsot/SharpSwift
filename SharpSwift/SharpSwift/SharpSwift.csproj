@@ -53,8 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\ExpressionSyntaxParser.cs" />
     <Compile Include="Converters\MemberDeclarationParses.cs" />
     <Compile Include="Converters\ParsesTypeAttribute.cs" />
+    <Compile Include="Converters\InitializerSyntaxParser.cs" />
     <Compile Include="Converters\SyntaxNodeConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

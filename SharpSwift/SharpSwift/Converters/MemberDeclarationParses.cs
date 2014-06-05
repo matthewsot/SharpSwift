@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
@@ -51,24 +53,51 @@ namespace SharpSwift.Converters
             return output;
         }
 
-
-        [ParsesType(typeof (FieldDeclarationSyntax))]
-        public static string FieldDeclaration(FieldDeclarationSyntax node)
-        {
-            return node.ToString();
-        }
-
-
         [ParsesType(typeof (EnumMemberDeclarationSyntax))]
         public static string EnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             return node.ToString();
         }
 
+
+        [ParsesType(typeof(AccessorDeclarationSyntax))]
+        public static string AccessorDeclaration(AccessorDeclarationSyntax node)
+        {
+            return SyntaxNode(node.Body);
+        }
+
+        [ParsesType(typeof(VariableDeclarationSyntax))]
+        public static string VariableDeclaration(VariableDeclarationSyntax node)
+        {
+            var thisVar = node.Variables.First(); //Only one var at a time for now
+            var output = "var " + thisVar.Identifier.Text;
+            if (!node.Type.IsVar)
+            {
+                output += ": " + Type(node.Type);
+            }
+            if (thisVar.Initializer == null)
+            {
+                return output + ";\r\n";
+            }
+
+            output += " " + SyntaxNode(thisVar.Initializer);
+            return output;
+        }
+
+        [ParsesType(typeof(FieldDeclarationSyntax))]
+        public static string FieldDeclaration(FieldDeclarationSyntax node)
+        {
+            var output = SyntaxNode(node.Declaration);
+            return output.Trim().TrimEnd(';') + ";\r\n";
+        }
+
         [ParsesType(typeof (PropertyDeclarationSyntax))]
         public static string PropertyDeclaration(PropertyDeclarationSyntax node)
         {
-            return node.ToString();
+            var output = "var " + node.Identifier.Text;
+            output += ": " + Type(node.Type);
+            //accessors not supported yet, basically makes a field
+            return output.Trim().TrimEnd(';') + ";\r\n";
         }
 
 
@@ -81,14 +110,9 @@ namespace SharpSwift.Converters
                 output += parameter.Identifier.Text + ": " + Type(parameter.Type) + ", ";
             }
 
-            output = output.Trim(' ', ',') + ") {\r\n";
+            output = output.Trim(' ', ',') + ") ";
 
-            foreach (var member in node.ChildNodes())
-            {
-                output += SyntaxNode(member);
-            }
-
-            output += "}\r\n";
+            output += Block(node.Body);
             return output;
         }
     }
