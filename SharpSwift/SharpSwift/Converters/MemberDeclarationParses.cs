@@ -42,14 +42,10 @@ namespace SharpSwift.Converters
                 output += parameter.Identifier.Text + ": " + Type(parameter.Type) + ", ";
             }
 
-            output = output.Trim(' ', ',') + ") {\r\n";
+            output = output.Trim(' ', ',') + ") ";
 
-            foreach (var member in node.ChildNodes())
-            {
-                output += SyntaxNode(member);
-            }
+            output += SyntaxNode(node.Body);
 
-            output += "}\r\n";
             return output;
         }
 

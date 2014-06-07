@@ -51,7 +51,6 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
-*/*.ide
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -216,3 +215,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+SharpSwift/SharpSwift.sln.ide/edb.chk
+SharpSwift/SharpSwift.sln.ide/storage.ide
+*.chk
+*.ide
