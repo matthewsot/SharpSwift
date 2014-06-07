@@ -64,6 +64,11 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(LiteralExpressionSyntax))]
         public static string LiteralExpression(LiteralExpressionSyntax node)
         {
+            if (node.IsKind(SyntaxKind.CharacterLiteralExpression))
+            {
+                //this is sketch, probably shouldn't use char literals o.o
+                return '"' + node.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
+            }
             return node.ToString();
         }
     }

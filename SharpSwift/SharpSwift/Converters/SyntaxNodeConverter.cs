@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
@@ -24,13 +25,19 @@ namespace SharpSwift.Converters
             return output + (includeBraces ? "}\r\n" : "");
         }
 
+        /// <summary>
+        /// Returns the Swift equivilant for a C# type
+        /// </summary>
+        /// <param name="typeName">The C# type's identifier as a string</param>
+        /// <returns>The Swift equivilant type as a string</returns>
         private static string Type(string typeName)
         {
             switch (typeName)
             {
                 case "string":
-                    return "NSString";
-                    break;
+                    return "String";
+                case "char":
+                    return "Character";
             }
             return typeName;
         }
@@ -42,14 +49,41 @@ namespace SharpSwift.Converters
             return Type(typeName);
         }
 
+        /// <summary>
+        /// Converts a C# Roslyn SyntaxNode to it's Swift equivilant
+        /// </summary>
+        /// <param name="node">Roslyn SyntaxNode representing the C# code to convert</param>
+        /// <returns>A string with the converted Swift code</returns>
         public static string SyntaxNode(SyntaxNode node)
         {
-            var nodeType = node.GetType();
+            if (node.HasLeadingTrivia)
+            {
+                foreach (var trivia in node.GetLeadingTrivia())
+                {
+                    if (trivia.IsKind(SyntaxKind.MultiLineCommentTrivia) ||
+                        trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                    {
+                        var triviaText = trivia.ToString().TrimStart('/', '*').TrimStart();
+                        if (triviaText.ToLower().Trim() == "ignore")
+                        {
+                            return "";
+                        }
+                    }
+                }
+            }
 
             if (node is BlockSyntax)
             {
+                //Block() takes two arguments, & I don't want to worry about it w/ reflection.
                 return Block((BlockSyntax)node);
             }
+
+            /*
+             * We're gonna search through ConverToSwift's static methods for one
+             * with the ParsesType attribute that matches the typeof node.
+             * If one isn't found we'll just return the C# code
+             */
+            var nodeType = node.GetType();
 
             var methods = typeof (ConvertToSwift).GetMethods();
             var matchedMethod =

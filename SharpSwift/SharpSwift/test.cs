@@ -19,7 +19,9 @@ namespace SharpSwift
 
         public test(string something)
         {
+            //IGNORE
             var y = new test("hello");
+            //raw: hello there!
             var str = somdething;
             str = str.Trim('1') + "hello";
             str += "hi there!";

@@ -115,5 +115,12 @@ namespace SharpSwift.Converters
             output += Block(node.Body);
             return output;
         }
+
+
+        [ParsesType(typeof(DestructorDeclarationSyntax))]
+        public static string DestructorDeclaration(DestructorDeclarationSyntax node)
+        {
+            return "deinit " + Block(node.Body);
+        }
     }
 }
