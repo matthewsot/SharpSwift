@@ -29,5 +29,27 @@ namespace SharpSwift.Converters
 
             return output + Semicolon(node.SemicolonToken);
         }
+
+        [ParsesType(typeof(IfStatementSyntax))]
+        public static string IfStatement(IfStatementSyntax node)
+        {
+            var output = node.IfKeyword.Text + " (";
+            output += SyntaxNode(node.Condition);
+            output += ")\r\n" + SyntaxNode(node.Statement);
+            if (node.Else != null)
+            {
+                output += SyntaxNode(node.Else);
+            }
+            return output;
+        }
+
+
+        [ParsesType(typeof(ElseClauseSyntax))]
+        public static string ElseClause(ElseClauseSyntax node)
+        {
+            var output = node.ElseKeyword.Text + " ";
+            output += SyntaxNode(node.Statement);
+            return output;
+        }
     }
 }

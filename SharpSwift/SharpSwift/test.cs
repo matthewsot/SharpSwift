@@ -28,6 +28,14 @@ namespace SharpSwift
             {
                 return;
             }
+            else if (one == '2')
+            {
+                return;
+            }
+            else
+            {
+                return;
+            }
             using (var yz = new StreamReader(""))
             {
                 
