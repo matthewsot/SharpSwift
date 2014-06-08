@@ -219,3 +219,6 @@ SharpSwift/SharpSwift.sln.ide/edb.chk
 SharpSwift/SharpSwift.sln.ide/storage.ide
 *.chk
 *.ide
+*.ide
+SharpSwift/SharpSwift.sln.ide/edb.chk
+*.ide

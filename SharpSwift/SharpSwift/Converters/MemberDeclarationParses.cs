@@ -55,7 +55,6 @@ namespace SharpSwift.Converters
             return node.ToString();
         }
 
-
         [ParsesType(typeof(AccessorDeclarationSyntax))]
         public static string AccessorDeclaration(AccessorDeclarationSyntax node)
         {

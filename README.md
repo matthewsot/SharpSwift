@@ -1,6 +1,6 @@
 SharpSwift
 ==========
-A C# to Swift language converter
+A C# to Swift language converter/transpiler
 
 ###What is it?
 SharpSwift is made up of three parts:
