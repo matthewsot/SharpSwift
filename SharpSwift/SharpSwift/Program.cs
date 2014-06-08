@@ -4,12 +4,51 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.MSBuild;
 using SharpSwift.Converters; 
 
 namespace SharpSwift
 {
     class Program
     {
+        private static Document GetDocumentFromSolution(string solutionPath, string documentPath)
+        {
+            var workspace = MSBuildWorkspace.Create();
+            var solution = workspace.OpenSolutionAsync(solutionPath).Result;
+
+            foreach (var document in solution.Projects.SelectMany(project => project.Documents))
+            {
+                if (document.FilePath.EndsWith(documentPath))
+                {
+                    return document;
+                }
+            }
+            return null;
+        }
+
+        static string FindSolution(string path, int levels = 0)
+        {
+            if (File.Exists(path))
+            {
+                path = (new FileInfo(path)).DirectoryName;
+            }
+
+            if (levels == 5) //too much recursion is bad o:
+            {
+                return "";
+            }
+
+            foreach (var file in Directory.GetFiles(path))
+            {
+                if (file.EndsWith(".sln"))
+                {
+                    return file;
+                }
+            }
+
+            return FindSolution((new DirectoryInfo(path)).Parent.FullName);
+        }
+
         static string GetIncludesFromTrivia(SyntaxTriviaList triviaList)
         {
             var output = "";
@@ -28,14 +67,37 @@ namespace SharpSwift
             return output;
         }
 
-        static string ParseFile(string path, bool doIndent = true)
+        static string ParseFile(string path, string solutionPath, bool doIndent = true)
         {
             Console.WriteLine("Parsing file " + path);
 
             var output = "//Converted with SharpSwift - https://github.com/matthewsot/SharpSwift\r\n";
             output += "//See https://github.com/matthewsot/DNSwift FMI about these includes\r\n\r\n";
             output += "include DNSwift;\r\n";
+
+            Document doc = null;
+            if (solutionPath != null)
+            {
+                doc = GetDocumentFromSolution(solutionPath, path);
+            }
+
             var tree = CSharpSyntaxTree.ParseFile(path);
+
+            if (doc != null)
+            {
+                SemanticModel model = doc.GetSemanticModelAsync().Result;
+                if (model != null)
+                {
+                    ConvertToSwift.model = model;
+                }
+
+                tree = doc.GetSyntaxTreeAsync().Result;
+                if (tree == null)
+                {
+                    tree = CSharpSyntaxTree.ParseFile(path);
+                }
+            }
+
             var root = (CompilationUnitSyntax)tree.GetRoot();
             var rootNamespace = root.Members.OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
             var classes = rootNamespace.Members.OfType<ClassDeclarationSyntax>();
@@ -87,6 +149,16 @@ namespace SharpSwift
                 return;
             }
 
+            string solution;
+            if (args.Contains("-solution"))
+            {
+                solution = args[args.ToList().IndexOf("-solution") + 1];
+            }
+            else
+            {
+                solution = FindSolution(inPath);
+            }
+
             inPath = inPath.Trim('"');
             outPath = (outPath == null) ? null : outPath.Trim('"');
 
@@ -98,7 +170,7 @@ namespace SharpSwift
                     if (!file.EndsWith(".cs"))
                         continue;
 
-                    var parsed = ParseFile(file, doIndent);
+                    var parsed = ParseFile(file, solution, doIndent);
 
                     var outputPath = outPath ?? file.Replace(".cs", ".swift");
                     if (!outputPath.EndsWith(".swift"))
@@ -116,7 +188,7 @@ namespace SharpSwift
             else if (File.Exists(inPath) && inPath.EndsWith(".cs"))
             {
                 //It's a file
-                var parsed = ParseFile(inPath, doIndent);
+                var parsed = ParseFile(inPath, solution, doIndent);
 
                 var outputPath = outPath ?? inPath.Replace(".cs", ".swift");
 

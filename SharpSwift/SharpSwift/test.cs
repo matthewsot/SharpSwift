@@ -9,6 +9,13 @@ namespace SharpSwift
         private string somdething = "123";
         private static string _something { get; set; }
 
+        private delegate string someDel(string a, int b);
+
+        private static void DoSomething(someDel del)
+        {
+            
+        }
+
         public static string something
         {
             get { return "hi"; }
@@ -24,6 +31,7 @@ namespace SharpSwift
             str = str.Trim('1') + "hello";
             str += "hi there!";
             str = "";
+            DoSomething((a, b) => { return a; });
             char one = '1';
             if (one == '1')
             {

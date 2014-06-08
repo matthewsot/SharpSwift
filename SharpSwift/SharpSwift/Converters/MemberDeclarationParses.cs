@@ -30,13 +30,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (MethodDeclarationSyntax))]
         public static string MethodDeclaration(MethodDeclarationSyntax node)
         {
-            var output = "func " + node.Identifier.Text + "(";
-            foreach (var parameter in node.ParameterList.Parameters)
-            {
-                output += parameter.Identifier.Text + ": " + Type(parameter.Type) + ", ";
-            }
-
-            output = output.Trim(' ', ',') + ") ";
+            var output = "func " + node.Identifier.Text + SyntaxNode(node.ParameterList) + " ";
 
             output += SyntaxNode(node.Body);
 

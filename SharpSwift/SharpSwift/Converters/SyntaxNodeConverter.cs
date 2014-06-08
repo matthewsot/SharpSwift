@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,6 +7,8 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        public static SemanticModel model = null;
+
         [ParsesType(typeof (BlockSyntax))]
         public static string Block(BlockSyntax node, bool includeBraces = true)
         {
@@ -43,8 +38,16 @@ namespace SharpSwift.Converters
                     return "String";
                 case "char":
                     return "Character";
+                case "void":
+                    return "Void";
             }
             return typeName;
+        }
+
+        [ParsesType(typeof(IdentifierNameSyntax))]
+        public static string IdentifierName(IdentifierNameSyntax node)
+        {
+            return Type(node.Identifier.Text);
         }
 
         [ParsesType(typeof(TypeSyntax))]

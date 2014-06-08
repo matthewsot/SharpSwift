@@ -6,25 +6,6 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-
-        [ParsesType(typeof(ArgumentListSyntax))]
-        public static string ArgumentList(ArgumentListSyntax node)
-        {
-            var output = "(";
-            foreach (var arg in node.Arguments)
-            {
-                output += SyntaxNode(arg.Expression) + ", ";
-            }
-            return output.TrimEnd(',', ' ') + ")";
-        }
-
-
-        [ParsesType(typeof(IdentifierNameSyntax))]
-        public static string IdentifierName(IdentifierNameSyntax node)
-        {
-            return node.Identifier.Text;
-        }
-
         [ParsesType(typeof(MemberAccessExpressionSyntax))]
         public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
         {
