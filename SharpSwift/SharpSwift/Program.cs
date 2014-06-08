@@ -55,7 +55,25 @@ namespace SharpSwift
 
         static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Must specify an input file");
+                return;
+            }
+
             var path = args[0].Trim('"');
+            var doIndent = true;
+            string outPath = null;
+            if (args.Length > 1)
+            {
+                doIndent = args[1] != "-noindent";
+                outPath = doIndent ? args[1] : null;
+            }
+            if (args.Length > 2)
+            {
+                outPath = outPath ?? args[2];
+            }
+
             if (Directory.Exists(path))
             {
                 //It's a folder
@@ -64,9 +82,15 @@ namespace SharpSwift
                     if (!file.EndsWith(".cs"))
                         continue;
 
-                    var parsed = ParseFile(file);
+                    var parsed = ParseFile(file, doIndent);
 
-                    using (var writer = new StreamWriter(file.Replace(".cs", ".swift")))
+                    var outputPath = outPath ?? file.Replace(".cs", ".swift");
+                    if (!outputPath.EndsWith(".swift"))
+                    {
+                        outputPath = outputPath.TrimEnd('\\') + "\\" + file.Split('\\').Last().Replace(".cs", ".swift");
+                    }
+
+                    using (var writer = new StreamWriter(outputPath))
                     {
                         writer.Write(parsed);
                         writer.Flush();
@@ -76,9 +100,11 @@ namespace SharpSwift
             else if (File.Exists(path) && path.EndsWith(".cs"))
             {
                 //It's a file
-                var parsed = ParseFile(path);
+                var parsed = ParseFile(path, doIndent);
 
-                using (var writer = new StreamWriter(path.Replace(".cs", ".swift")))
+                var outputPath = outPath ?? path.Replace(".cs", ".swift");
+
+                using (var writer = new StreamWriter(outputPath))
                 {
                     writer.Write(parsed);
                     writer.Flush();

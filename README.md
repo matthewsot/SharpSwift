@@ -1,6 +1,12 @@
 SharpSwift
 ==========
-A C# to Swift language converter/transpiler
+A C# to Swift language converter/transpiler.
+
+``sharpswift.exe "somefile.cs"``
+
+``sharpswift.exe "C:\some\folder" -noindent``
+
+``sharpswift.exe "somefile.cs" "anotherfile.swift"``
 
 ###What is it?
 SharpSwift is made up of three parts:
