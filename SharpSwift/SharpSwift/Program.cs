@@ -40,14 +40,18 @@ namespace SharpSwift
             var rootNamespace = root.Members.OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
             var classes = rootNamespace.Members.OfType<ClassDeclarationSyntax>();
 
-            foreach (var usingDecl in root.Usings)
+            foreach (var usingDir in root.Usings)
             {
-                if (usingDecl.Name.ToString().StartsWith("System"))
+                if (usingDir.Name.ToString().StartsWith("System"))
                 {
-                    output += "include DNSwift." + usingDecl.Name + ";\r\n";
+                    output += "include DNSwift." + usingDir.Name + ";\r\n";
+                }
+                else if(usingDir.GetLeadingTrivia().Any(trivia => trivia.ToString().ToLower().TrimStart('/', '*').StartsWith("universal")))
+                {
+                    output += "include " + usingDir.Name + ";\r\n";
                 }
 
-                output += GetIncludesFromTrivia(usingDecl.GetLeadingTrivia());
+                output += GetIncludesFromTrivia(usingDir.GetLeadingTrivia());
             }
             output += GetIncludesFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added includes to the bottom
             output += GetIncludesFromTrivia(rootNamespace.GetLeadingTrivia());

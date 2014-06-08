@@ -29,7 +29,6 @@ namespace SharpSwift.Converters
         public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             return SyntaxNode(node.Expression) + node.OperatorToken.Text + SyntaxNode(node.Name);
-            return node.ToString();
         }
 
         //something.Method("arg")
@@ -37,7 +36,6 @@ namespace SharpSwift.Converters
         public static string InvocationExpression(InvocationExpressionSyntax node)
         {
             return SyntaxNode(node.Expression) + SyntaxNode(node.ArgumentList);
-            return node.ToString();
         }
 
         //new Something()
@@ -76,16 +74,11 @@ namespace SharpSwift.Converters
         public static string ExpressionStatement(ExpressionStatementSyntax node)
         {
             return SyntaxNode(node.Expression) + Semicolon(node.SemicolonToken);
-            //return node.ToString();
         }
 
         [ParsesType(typeof(ExpressionSyntax))]
         public static string Expression(ExpressionSyntax node)
         {
-            if (node.IsKind(SyntaxKind.StringLiteralExpression))
-            {
-                return node.ToString();
-            }
             return node.ToString();
         }
 
