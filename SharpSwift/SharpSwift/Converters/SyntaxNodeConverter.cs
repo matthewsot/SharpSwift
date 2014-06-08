@@ -7,8 +7,6 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        public static SemanticModel model = null;
-
         [ParsesType(typeof (BlockSyntax))]
         public static string Block(BlockSyntax node, bool includeBraces = true)
         {
