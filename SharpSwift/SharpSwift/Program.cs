@@ -55,29 +55,33 @@ namespace SharpSwift
 
         static void Main(string[] args)
         {
-            if (args.Length == 0)
+            var inPath = args.FirstOrDefault(arg => !arg.StartsWith("-"));
+            if(args.Contains("-input"))
             {
-                Console.WriteLine("Must specify an input file");
+                inPath = args[args.ToList().IndexOf("-input") + 1];
+            }
+
+            var doIndent = !args.Contains("-noindent");
+
+            var outPath = args.ToList().FirstOrDefault(arg => arg != inPath && !arg.StartsWith("-"));
+            if (args.Contains("-output"))
+            {
+                outPath = args[args.ToList().IndexOf("-output") + 1];
+            }
+
+            if (inPath == null)
+            {
+                Console.WriteLine("You must specify an input file");
                 return;
             }
 
-            var path = args[0].Trim('"');
-            var doIndent = true;
-            string outPath = null;
-            if (args.Length > 1)
-            {
-                doIndent = args[1] != "-noindent";
-                outPath = doIndent ? args[1] : null;
-            }
-            if (args.Length > 2)
-            {
-                outPath = outPath ?? args[2];
-            }
+            inPath = inPath.Trim('"');
+            outPath = (outPath == null) ? null : outPath.Trim('"');
 
-            if (Directory.Exists(path))
+            if (Directory.Exists(inPath))
             {
                 //It's a folder
-                foreach (var file in Directory.GetFiles(path))
+                foreach (var file in Directory.GetFiles(inPath))
                 {
                     if (!file.EndsWith(".cs"))
                         continue;
@@ -97,12 +101,12 @@ namespace SharpSwift
                     }
                 }
             }
-            else if (File.Exists(path) && path.EndsWith(".cs"))
+            else if (File.Exists(inPath) && inPath.EndsWith(".cs"))
             {
                 //It's a file
-                var parsed = ParseFile(path, doIndent);
+                var parsed = ParseFile(inPath, doIndent);
 
-                var outputPath = outPath ?? path.Replace(".cs", ".swift");
+                var outputPath = outPath ?? inPath.Replace(".cs", ".swift");
 
                 using (var writer = new StreamWriter(outputPath))
                 {
