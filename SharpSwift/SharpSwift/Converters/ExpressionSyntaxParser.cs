@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -15,6 +6,41 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+
+        [ParsesType(typeof(ArgumentListSyntax))]
+        public static string ArgumentList(ArgumentListSyntax node)
+        {
+            var output = "(";
+            foreach (var arg in node.Arguments)
+            {
+                output += SyntaxNode(arg.Expression) + ", ";
+            }
+            return output.TrimEnd(',', ' ') + ")";
+        }
+
+
+        [ParsesType(typeof(IdentifierNameSyntax))]
+        public static string IdentifierName(IdentifierNameSyntax node)
+        {
+            return node.Identifier.Text;
+        }
+
+        [ParsesType(typeof(MemberAccessExpressionSyntax))]
+        public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
+        {
+            return SyntaxNode(node.Expression) + node.OperatorToken.Text + SyntaxNode(node.Name);
+            return node.ToString();
+        }
+
+        //something.Method("arg")
+        [ParsesType(typeof(InvocationExpressionSyntax))]
+        public static string InvocationExpression(InvocationExpressionSyntax node)
+        {
+            return SyntaxNode(node.Expression) + SyntaxNode(node.ArgumentList);
+            return node.ToString();
+        }
+
+        //new Something()
         [ParsesType(typeof(ObjectCreationExpressionSyntax))]
         public static string ObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
@@ -29,12 +55,14 @@ namespace SharpSwift.Converters
             return output;
         }
 
+        //var something = something_else;
         [ParsesType(typeof(LocalDeclarationStatementSyntax))]
         public static string LocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
-            return SyntaxNode(node.Declaration) + (node.SemicolonToken.Text == ";" ? ";\r\n" : "");
+            return SyntaxNode(node.Declaration) + Semicolon(node.SemicolonToken);
         }
 
+        //something (+/-/+=/etc) something_else
         [ParsesType(typeof(BinaryExpressionSyntax))]
         public static string BinaryExpression(BinaryExpressionSyntax node)
         {
@@ -47,7 +75,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(ExpressionStatementSyntax))]
         public static string ExpressionStatement(ExpressionStatementSyntax node)
         {
-            return SyntaxNode(node.Expression) + (node.SemicolonToken.Text == ";" ? ";\r\n" : "");
+            return SyntaxNode(node.Expression) + Semicolon(node.SemicolonToken);
             //return node.ToString();
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace SharpSwift
 {
@@ -22,6 +23,15 @@ namespace SharpSwift
             str = str.Trim('1') + "hello";
             str += "hi there!";
             str = "";
+            char one = '1';
+            if (one == '1')
+            {
+                return;
+            }
+            using (var yz = new StreamReader(""))
+            {
+                
+            }
         }
     }
 }

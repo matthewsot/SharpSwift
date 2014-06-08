@@ -13,6 +13,7 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        //= something_else()
         [ParsesType(typeof(EqualsValueClauseSyntax))]
         public static string EqualsValueClause(EqualsValueClauseSyntax node)
         {

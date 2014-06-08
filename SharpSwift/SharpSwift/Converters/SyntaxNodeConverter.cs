@@ -25,6 +25,11 @@ namespace SharpSwift.Converters
             return output + (includeBraces ? "}\r\n" : "");
         }
 
+        private static string Semicolon(SyntaxToken semicolonToken)
+        {
+            return semicolonToken.Text == ";" ? ";\r\n" : "";
+        }
+
         /// <summary>
         /// Returns the Swift equivilant for a C# type
         /// </summary>

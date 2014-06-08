@@ -11,8 +11,6 @@ tmp/
 *.bak
 *.swp
 *~.nib
-*.ide
-*.chk
 local.properties
 .classpath
 .settings/
@@ -215,10 +213,3 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-SharpSwift/SharpSwift.sln.ide/edb.chk
-SharpSwift/SharpSwift.sln.ide/storage.ide
-*.chk
-*.ide
-*.ide
-SharpSwift/SharpSwift.sln.ide/edb.chk
-*.ide
