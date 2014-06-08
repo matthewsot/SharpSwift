@@ -10,6 +10,24 @@ namespace SharpSwift
 {
     class Program
     {
+        static string GetIncludesFromTrivia(SyntaxTriviaList triviaList)
+        {
+            var output = "";
+            foreach (var trivia in triviaList)
+            {
+                if (!trivia.IsKind(SyntaxKind.MultiLineCommentTrivia) &&
+                    !trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                    continue;
+
+                var comment = trivia.ToString().TrimStart('/', '*').Trim();
+                if (comment.StartsWith("include"))
+                {
+                    output += comment + "\r\n";
+                }
+            }
+            return output;
+        }
+
         static string ParseFile(string path, bool doIndent = true)
         {
             Console.WriteLine("Parsing file " + path);
@@ -24,25 +42,15 @@ namespace SharpSwift
 
             foreach (var usingDecl in root.Usings)
             {
-                if (usingDecl.ToString().StartsWith("System"))
+                if (usingDecl.Name.ToString().StartsWith("System"))
                 {
-                    output += "DNSwift." + usingDecl + ";";
+                    output += "include DNSwift." + usingDecl.Name + ";\r\n";
                 }
 
-                if (usingDecl.HasLeadingTrivia) continue;
-
-                foreach (var trivia in usingDecl.GetLeadingTrivia())
-                {
-                    if (!trivia.IsKind(SyntaxKind.MultiLineCommentTrivia) &&
-                        !trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)) continue;
-
-                    var comment = trivia.ToString().TrimStart('/', '*').Trim();
-                    if (comment.StartsWith("include"))
-                    {
-                        output += comment + "\r\n";
-                    }
-                }
+                output += GetIncludesFromTrivia(usingDecl.GetLeadingTrivia());
             }
+            output += GetIncludesFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added includes to the bottom
+            output += GetIncludesFromTrivia(rootNamespace.GetLeadingTrivia());
             output += "\r\n";
 
             foreach (var childClass in classes)

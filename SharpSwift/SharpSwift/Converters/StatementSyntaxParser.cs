@@ -43,7 +43,6 @@ namespace SharpSwift.Converters
             return output;
         }
 
-
         [ParsesType(typeof(ElseClauseSyntax))]
         public static string ElseClause(ElseClauseSyntax node)
         {
