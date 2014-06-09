@@ -25,6 +25,8 @@ namespace SharpSwift
         public test(string something)
         {
             var ints = new int[] {0, 1, 2};
+            var y = new test("hello");
+            string x, z = "123";
             /*
             //IGNORE
             var y = new test("hello");

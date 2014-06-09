@@ -8,19 +8,29 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(VariableDeclarationSyntax))]
         public static string VariableDeclaration(VariableDeclarationSyntax node)
         {
-            var thisVar = node.Variables.First(); //Only one var at a time for now
-            var output = "var " + thisVar.Identifier.Text;
-            if (!node.Type.IsVar)
+            var output = "var ";
+            foreach (var currVar in node.Variables)
             {
-                output += ": " + Type(node.Type);
-            }
-            if (thisVar.Initializer == null)
-            {
-                return output + ";\r\n";
+                output += currVar.Identifier.Text;
+                if (!node.Type.IsVar)
+                {
+                    output += ": " + Type(node.Type);
+                }
+                if (currVar.Initializer != null)
+                {
+                    output += " " + SyntaxNode(currVar.Initializer);
+                }
+                output += ", ";
             }
 
-            output += " " + SyntaxNode(thisVar.Initializer);
-            return output;
+            return output.TrimEnd(',', ' ');
+        }
+
+        //var something = something_else;
+        [ParsesType(typeof(LocalDeclarationStatementSyntax))]
+        public static string LocalDeclarationStatement(LocalDeclarationStatementSyntax node)
+        {
+            return SyntaxNode(node.Declaration) + Semicolon(node.SemicolonToken);
         }
     }
 }

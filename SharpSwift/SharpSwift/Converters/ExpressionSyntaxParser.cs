@@ -7,6 +7,13 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        //TODO: check this out
+        [ParsesType(typeof(ExpressionSyntax))]
+        public static string Expression(ExpressionSyntax node)
+        {
+            return node.ToString();
+        }
+
         [ParsesType(typeof(MemberAccessExpressionSyntax))]
         public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
         {
@@ -24,32 +31,14 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(ObjectCreationExpressionSyntax))]
         public static string ObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
-            var output = Type(((IdentifierNameSyntax)node.Type).Identifier.Text) + "(";
-
-            foreach (var arg in node.ArgumentList.Arguments)
-            {
-                output += SyntaxNode(arg.Expression).Trim() + ", ";
-            }
-
-            output = output.Trim(' ', ',') + ")";
-            return output;
-        }
-
-        //var something = something_else;
-        [ParsesType(typeof(LocalDeclarationStatementSyntax))]
-        public static string LocalDeclarationStatement(LocalDeclarationStatementSyntax node)
-        {
-            return SyntaxNode(node.Declaration) + Semicolon(node.SemicolonToken);
+            return SyntaxNode(node.Type) + SyntaxNode(node.ArgumentList);
         }
 
         //something (+/-/+=/etc) something_else
         [ParsesType(typeof(BinaryExpressionSyntax))]
         public static string BinaryExpression(BinaryExpressionSyntax node)
         {
-            var output = SyntaxNode(node.Left).Trim();
-            output += " " + node.OperatorToken.Text + " ";
-            output += SyntaxNode(node.Right).Trim();
-            return output;
+            return SyntaxNode(node.Left) + " " + node.OperatorToken.Text + " " + SyntaxNode(node.Right);
         }
 
         [ParsesType(typeof(ExpressionStatementSyntax))]
@@ -58,21 +47,17 @@ namespace SharpSwift.Converters
             return SyntaxNode(node.Expression) + Semicolon(node.SemicolonToken);
         }
 
-        [ParsesType(typeof(ExpressionSyntax))]
-        public static string Expression(ExpressionSyntax node)
-        {
-            return node.ToString();
-        }
-
         [ParsesType(typeof(LiteralExpressionSyntax))]
         public static string LiteralExpression(LiteralExpressionSyntax node)
         {
-            if (node.IsKind(SyntaxKind.CharacterLiteralExpression))
+            switch (node.CSharpKind())
             {
-                //this is sketch, probably shouldn't use char literals o.o
-                return '"' + node.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
+                case SyntaxKind.CharacterLiteralExpression:
+                    //this is sketch, probably shouldn't use char literals o.o
+                    return '"' + node.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
+                default:
+                    return node.ToString();
             }
-            return node.ToString();
         }
 
         [ParsesType(typeof(ImplicitArrayCreationExpressionSyntax))]
@@ -82,7 +67,6 @@ namespace SharpSwift.Converters
             output += string.Join(", ", node.Initializer.Expressions.Select(SyntaxNode));
             return output + " ]";
         }
-
 
         [ParsesType(typeof(ArrayCreationExpressionSyntax))]
         public static string ArrayCreationExpression(ArrayCreationExpressionSyntax node)
