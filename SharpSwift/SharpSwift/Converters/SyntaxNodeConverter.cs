@@ -11,10 +11,9 @@ namespace SharpSwift.Converters
         public static string Block(BlockSyntax node, bool includeBraces = true)
         {
             var output = (includeBraces ? "{\r\n" : "");
-            foreach (var child in node.ChildNodes())
-            {
-                output += SyntaxNode(child);
-            }
+
+            output += string.Join("", node.ChildNodes().Select(SyntaxNode));
+
             return output + (includeBraces ? "}\r\n" : "");
         }
 
@@ -42,18 +41,6 @@ namespace SharpSwift.Converters
                     return "Void";
             }
             return typeName;
-        }
-
-        [ParsesType(typeof(IdentifierNameSyntax))]
-        public static string IdentifierName(IdentifierNameSyntax node)
-        {
-            return Type(node.Identifier.Text);
-        }
-
-        [ParsesType(typeof(TypeParameterSyntax))]
-        public static string TypeParameter(TypeParameterSyntax node)
-        {
-            return node.Identifier.Text;
         }
 
         [ParsesType(typeof(TypeSyntax))]

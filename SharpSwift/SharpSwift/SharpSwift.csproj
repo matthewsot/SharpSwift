@@ -67,6 +67,7 @@
     <Compile Include="Converters\LambdaSyntaxParser.cs" />
     <Compile Include="Converters\ListSyntaxParser.cs" />
     <Compile Include="Converters\MemberDeclarationParses.cs" />
+    <Compile Include="Converters\NameSyntaxParser.cs" />
     <Compile Include="Converters\ParsesTypeAttribute.cs" />
     <Compile Include="Converters\InitializerSyntaxParser.cs" />
     <Compile Include="Converters\StatementSyntaxParser.cs" />

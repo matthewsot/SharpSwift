@@ -1,49 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        [ParsesType(typeof(ArgumentSyntax))]
+        public static string Argument(ArgumentSyntax node)
+        {
+            var output = SyntaxNode(node.Expression);
+            if (node.NameColon != null)
+            {
+                output = SyntaxNode(node.NameColon.Name) + ": " + output;
+            }
+            return output;
+        }
+
         [ParsesType(typeof (ArgumentListSyntax))]
         public static string ArgumentList(ArgumentListSyntax node)
         {
-            var output = "(";
-            foreach (var arg in node.Arguments)
-            {
-                output += SyntaxNode(arg.Expression) + ", ";
-            }
-            return output.TrimEnd(',', ' ') + ")";
+            return "(" + string.Join(", ", node.Arguments.Select(SyntaxNode)) + ")";
         }
 
-        [ParsesType(typeof(GenericNameSyntax))]
-        public static string GenericName(GenericNameSyntax node)
+        [ParsesType(typeof(TypeParameterSyntax))]
+        public static string TypeParameter(TypeParameterSyntax node)
         {
-            //Action<string, int> converts to (String, Int) -> Void
-            if (node.Identifier.Text == "Action")
-            {
-                return ": (" + SyntaxNode(node.TypeArgumentList) + ") -> Void";
-            }
-            //Func<string, int, string> converts to (String, Int) -> String
-            if (node.Identifier.Text == "Func")
-            {
-                var output = ": (";
-                
-                //The last generic argument in Func<> is used as a return type
-                var allButLastArguments = node.TypeArgumentList.Arguments.Take(node.TypeArgumentList.Arguments.Count - 1);
+            return node.Identifier.Text;
+        }
 
-                output += string.Join(", ", allButLastArguments.Select(Type));
-
-                return output + ") -> " + Type(node.TypeArgumentList.Arguments.Last());
-            }
-
-            //Something<another, thing> converts to Something<another, thing> :D
-            return node.Identifier.Text + "<" + SyntaxNode(node.TypeArgumentList) + ">";
+        [ParsesType(typeof(TypeParameterListSyntax))]
+        public static string TypeParameterList(TypeParameterListSyntax node)
+        {
+            return string.Join(", ", node.Parameters.Select(SyntaxNode));
         }
 
         //string something
@@ -73,12 +61,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (ParameterListSyntax))]
         public static string ParameterList(ParameterListSyntax node)
         {
-            var output = "(";
-            foreach (var arg in node.Parameters)
-            {
-                output += SyntaxNode(arg) + ", ";
-            }
-            return output.TrimEnd(',', ' ') + ")";
+            return "(" + string.Join(", ", node.Parameters.Select(SyntaxNode)) + ")";
         }
     }
 }

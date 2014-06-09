@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
@@ -12,7 +13,11 @@ namespace SharpSwift.Converters
 
             output += Block((BlockSyntax)node.Statement, false);
 
-            output += node.Declaration.Variables.First().Identifier.Text + " = nil;\r\n";
+            //Swift calls deinit when you make a variable nil
+
+            output += string.Join("",
+                node.Declaration.Variables.Select(variable => variable.Identifier.Text + " = nil;\r\n"));
+
             return output;
         }
 
@@ -24,7 +29,7 @@ namespace SharpSwift.Converters
 
             if (node.Expression != null)
             {
-                output += " " + SyntaxNode(node.Expression).Trim();
+                output += " " + SyntaxNode(node.Expression);
             }
 
             return output + Semicolon(node.SemicolonToken);

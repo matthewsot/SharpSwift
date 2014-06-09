@@ -27,6 +27,10 @@ namespace SharpSwift
             var ints = new int[] {0, 1, 2};
             var y = new test("hello");
             string x, z = "123";
+            using (var reader = new StreamReader(""))
+            {
+                var d = "1232";
+            }
             /*
             //IGNORE
             var y = new test("hello");

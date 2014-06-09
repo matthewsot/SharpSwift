@@ -17,46 +17,33 @@ namespace SharpSwift.Converters
             var baseType = classSyntax.BaseList.Types.OfType<IdentifierNameSyntax>().FirstOrDefault();
             if (baseType != null)
             {
-                output += ": " + baseType;
+                output += ": " + SyntaxNode(baseType);
             }
             output += " {\r\n";
 
-            foreach (var member in classSyntax.Members)
-            {
-                output += SyntaxNode(member);
-            }
+            output += string.Join("", classSyntax.Members.Select(SyntaxNode));
 
             return output + "}\r\n";
-        }
-
-
-        [ParsesType(typeof(TypeParameterListSyntax))]
-        public static string TypeParameterList(TypeParameterListSyntax node)
-        {
-            return string.Join(", ", node.Parameters.Select(SyntaxNode));
         }
 
         [ParsesType(typeof (MethodDeclarationSyntax))]
         public static string MethodDeclaration(MethodDeclarationSyntax node)
         {
             var output = "func " + node.Identifier.Text;
-            if (node.TypeParameterList != null)
+
+            if (node.TypeParameterList != null) //public string Something<T>
             {
-                output += "<";
-                //TODO typeparameterlist separate?
-                output += SyntaxNode(node.TypeParameterList);
-                output += ">";
+                output += "<" + SyntaxNode(node.TypeParameterList) + ">";
             }
 
             output += SyntaxNode(node.ParameterList);
+
             if (node.ReturnType != null)
             {
                 output += " -> " + SyntaxNode(node.ReturnType);
             }
 
-            output += " " + SyntaxNode(node.Body);
-
-            return output;
+            return output + " " + SyntaxNode(node.Body);
         }
 
 
@@ -108,6 +95,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(AccessorDeclarationSyntax))]
         public static string AccessorDeclaration(AccessorDeclarationSyntax node)
         {
+            //TODO: implement this
             return SyntaxNode(node.Body);
         }
 
@@ -129,16 +117,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (ConstructorDeclarationSyntax))]
         public static string ConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            var output = "init(";
-            foreach (var parameter in node.ParameterList.Parameters)
-            {
-                output += parameter.Identifier.Text + ": " + Type(parameter.Type) + ", ";
-            }
-
-            output = output.Trim(' ', ',') + ") ";
-            
-            output += Block(node.Body);
-            return output;
+            return "init" + SyntaxNode(node.ParameterList) + " " + Block(node.Body);
         }
 
         [ParsesType(typeof(DestructorDeclarationSyntax))]
