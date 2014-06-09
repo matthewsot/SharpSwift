@@ -141,7 +141,6 @@ namespace SharpSwift.Converters
             return output;
         }
 
-
         [ParsesType(typeof(DestructorDeclarationSyntax))]
         public static string DestructorDeclaration(DestructorDeclarationSyntax node)
         {

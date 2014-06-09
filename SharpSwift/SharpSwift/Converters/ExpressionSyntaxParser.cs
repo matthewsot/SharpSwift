@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -72,6 +73,23 @@ namespace SharpSwift.Converters
                 return '"' + node.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
             }
             return node.ToString();
+        }
+
+        [ParsesType(typeof(ImplicitArrayCreationExpressionSyntax))]
+        public static string ImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        {
+            var output = "[ ";
+            output += string.Join(", ", node.Initializer.Expressions.Select(SyntaxNode));
+            return output + " ]";
+        }
+
+
+        [ParsesType(typeof(ArrayCreationExpressionSyntax))]
+        public static string ArrayCreationExpression(ArrayCreationExpressionSyntax node)
+        {
+            var output = "[ ";
+            output += string.Join(", ", node.Initializer.Expressions.Select(SyntaxNode));
+            return output + " ]";
         }
     }
 }
