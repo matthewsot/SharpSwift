@@ -8,11 +8,11 @@ namespace SharpSwift
     class test : ASCIIEncoding
     {
         private string somdething = "123";
-        private static string _something { get; set; }
+        //private static string _something { get; set; }
 
-        private static void DoSomething(Func<string, int, string> del)
+        private static T DoSomething<T>(Func<string, int, string> del, T input)
         {
-            
+            return input;
         }
 
         enum Something
@@ -20,12 +20,6 @@ namespace SharpSwift
             Some = 1,
             Another,
             Third = 3
-        }
-
-        public static string something
-        {
-            get { return "hi"; }
-            set { _something = value; }
         }
 
         public test(string something)
@@ -37,7 +31,7 @@ namespace SharpSwift
             str = str.Trim('1') + "hello";
             str += "hi there!";
             str = "";
-            DoSomething((a, b) => { return a; });
+            //DoSomething((a, b) => { return a; });
             char one = '1';
             if (one == '1')
             {

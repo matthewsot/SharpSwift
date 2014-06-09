@@ -32,9 +32,22 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (MethodDeclarationSyntax))]
         public static string MethodDeclaration(MethodDeclarationSyntax node)
         {
-            var output = "func " + node.Identifier.Text + SyntaxNode(node.ParameterList) + " ";
+            var output = "func " + node.Identifier.Text;
+            if (node.TypeParameterList != null)
+            {
+                output += "<";
+                //TODO typeparameterlist separate?
+                output += string.Join(", ", node.TypeParameterList.Parameters.Select(type => SyntaxNode(type).Trim()));
+                output += ">";
+            }
 
-            output += SyntaxNode(node.Body);
+            output += SyntaxNode(node.ParameterList);
+            if (node.ReturnType != null)
+            {
+                output += " -> " + SyntaxNode(node.ReturnType);
+            }
+
+            output += " " + SyntaxNode(node.Body);
 
             return output;
         }
@@ -42,6 +55,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (EnumDeclarationSyntax))]
         public static string EnumDeclaration(EnumDeclarationSyntax node)
         {
+            //TODO: parse EnumMemberDeclaration separately
             var output = "enum " + node.Identifier.Text;
             foreach (var decl in node.ChildNodes().OfType<EnumMemberDeclarationSyntax>().Where(decl => decl.EqualsValue != null).Select(decl => decl.EqualsValue.Value))
             {
