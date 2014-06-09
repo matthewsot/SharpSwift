@@ -16,6 +16,13 @@ namespace SharpSwift
             
         }
 
+        enum Something
+        {
+            Some = 1,
+            Another,
+            Third = 3
+        }
+
         public static string something
         {
             get { return "hi"; }

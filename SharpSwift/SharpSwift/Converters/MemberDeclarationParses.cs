@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
@@ -37,10 +39,43 @@ namespace SharpSwift.Converters
             return output;
         }
 
-        [ParsesType(typeof (EnumMemberDeclarationSyntax))]
-        public static string EnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        [ParsesType(typeof (EnumDeclarationSyntax))]
+        public static string EnumDeclaration(EnumDeclarationSyntax node)
         {
-            return node.ToString();
+            var output = "enum " + node.Identifier.Text;
+            foreach (var decl in node.ChildNodes().OfType<EnumMemberDeclarationSyntax>().Where(decl => decl.EqualsValue != null).Select(decl => decl.EqualsValue.Value))
+            {
+                if (decl.IsKind(SyntaxKind.StringLiteralExpression))
+                {
+                    output += ": String";
+                }
+                else if (decl.IsKind(SyntaxKind.CharacterLiteralExpression))
+                {
+                    output += ": Character";
+                }
+                else if (decl.IsKind(SyntaxKind.NumericLiteralExpression))
+                {
+                    output += ": Int";
+                }
+                else
+                {
+                    continue;
+                }
+                break;
+            }
+            output += " {\r\n";
+            foreach (var member in node.Members)
+            {
+                output += member.Identifier.Text;
+                if (member.EqualsValue != null)
+                {
+                    output += " " + member.EqualsValue.EqualsToken.Text + " " + SyntaxNode(member.EqualsValue.Value);
+                }
+                output += ", \r\n";
+            }
+            output = output.TrimEnd().TrimEnd(',') + "\r\n";
+            output += "}\r\n";
+            return output;
         }
 
         [ParsesType(typeof(AccessorDeclarationSyntax))]
