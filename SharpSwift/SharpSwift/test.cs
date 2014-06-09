@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 //include Something.Else;
 
@@ -9,9 +10,7 @@ namespace SharpSwift
         private string somdething = "123";
         private static string _something { get; set; }
 
-        private delegate string someDel(string a, int b);
-
-        private static void DoSomething(someDel del)
+        private static void DoSomething(Func<string, int, string> del)
         {
             
         }

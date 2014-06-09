@@ -36,6 +36,8 @@ namespace SharpSwift.Converters
                     return "String";
                 case "char":
                     return "Character";
+                case "int":
+                    return "Int";
                 case "void":
                     return "Void";
             }
