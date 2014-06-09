@@ -24,6 +24,8 @@ namespace SharpSwift
 
         public test(string something)
         {
+            var ints = new[] {0, 1, 2};
+            /*
             //IGNORE
             var y = new test("hello");
             //raw: hello there!
@@ -49,6 +51,7 @@ namespace SharpSwift
             {
                 
             }
+            */
         }
     }
 }

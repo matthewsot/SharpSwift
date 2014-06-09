@@ -50,6 +50,12 @@ namespace SharpSwift.Converters
             return Type(node.Identifier.Text);
         }
 
+        [ParsesType(typeof(TypeParameterSyntax))]
+        public static string TypeParameter(TypeParameterSyntax node)
+        {
+            return node.Identifier.Text;
+        }
+
         [ParsesType(typeof(TypeSyntax))]
         public static string Type(TypeSyntax node)
         {

@@ -29,6 +29,13 @@ namespace SharpSwift.Converters
             return output + "}\r\n";
         }
 
+
+        [ParsesType(typeof(TypeParameterListSyntax))]
+        public static string TypeParameterList(TypeParameterListSyntax node)
+        {
+            return string.Join(", ", node.Parameters.Select(SyntaxNode));
+        }
+
         [ParsesType(typeof (MethodDeclarationSyntax))]
         public static string MethodDeclaration(MethodDeclarationSyntax node)
         {
@@ -37,7 +44,7 @@ namespace SharpSwift.Converters
             {
                 output += "<";
                 //TODO typeparameterlist separate?
-                output += string.Join(", ", node.TypeParameterList.Parameters.Select(type => SyntaxNode(type).Trim()));
+                output += SyntaxNode(node.TypeParameterList);
                 output += ">";
             }
 
@@ -52,11 +59,25 @@ namespace SharpSwift.Converters
             return output;
         }
 
+
+        [ParsesType(typeof(EnumMemberDeclarationSyntax))]
+        public static string EnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        {
+            var output = node.Identifier.Text;
+            if (node.EqualsValue != null)
+            {
+                output += " " + SyntaxNode(node.EqualsValue);
+            }
+            return output;
+        }
+
         [ParsesType(typeof (EnumDeclarationSyntax))]
         public static string EnumDeclaration(EnumDeclarationSyntax node)
         {
             //TODO: parse EnumMemberDeclaration separately
             var output = "enum " + node.Identifier.Text;
+
+            //Get the value of the enum
             foreach (var decl in node.ChildNodes().OfType<EnumMemberDeclarationSyntax>().Where(decl => decl.EqualsValue != null).Select(decl => decl.EqualsValue.Value))
             {
                 if (decl.IsKind(SyntaxKind.StringLiteralExpression))
@@ -77,18 +98,10 @@ namespace SharpSwift.Converters
                 }
                 break;
             }
+
             output += " {\r\n";
-            foreach (var member in node.Members)
-            {
-                output += member.Identifier.Text;
-                if (member.EqualsValue != null)
-                {
-                    output += " " + member.EqualsValue.EqualsToken.Text + " " + SyntaxNode(member.EqualsValue.Value);
-                }
-                output += ", \r\n";
-            }
-            output = output.TrimEnd().TrimEnd(',') + "\r\n";
-            output += "}\r\n";
+
+            output += string.Join(",\r\n", node.Members.Select(SyntaxNode)) + "\r\n}\r\n";
             return output;
         }
 
