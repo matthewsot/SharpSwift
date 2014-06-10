@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        //TODO: _creatingObject is sketch. look into other ways to do this
+        private static string _creatingObject = null;
+
         [ParsesType(typeof(ArgumentSyntax))]
         public static string Argument(ArgumentSyntax node)
         {
@@ -12,6 +16,11 @@ namespace SharpSwift.Converters
             if (node.NameColon != null)
             {
                 output = SyntaxNode(node.NameColon.Name) + ": " + output;
+            }
+            else if(_creatingObject != null)
+            {
+                //In Swift, object creation arguments must be named
+                Console.WriteLine("WARNING: Non-named argument found while creating object \"" + _creatingObject + "\".");
             }
             return output;
         }
@@ -40,7 +49,6 @@ namespace SharpSwift.Converters
         {
             var output = node.Identifier.Text;
 
-            
             if (node.Type != null)
             {
                 if (node.Type is GenericNameSyntax)
