@@ -10,7 +10,7 @@ namespace SharpSwift
         private string somdething = "123";
         //private static string _something { get; set; }
 
-        private static T DoSomething<T>(Func<string, int, string> del, T input)
+        private static T DoSomething<T>(T input, params string[] pms)
         {
             return input;
         }
@@ -24,6 +24,7 @@ namespace SharpSwift
 
         public test(string something)
         {
+            var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};
             var y = new test("hello");
             string x, z = "123";

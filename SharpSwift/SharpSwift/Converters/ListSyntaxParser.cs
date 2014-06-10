@@ -40,6 +40,7 @@ namespace SharpSwift.Converters
         {
             var output = node.Identifier.Text;
 
+            
             if (node.Type != null)
             {
                 if (node.Type is GenericNameSyntax)
@@ -54,6 +55,14 @@ namespace SharpSwift.Converters
                 {
                     output += ": " + SyntaxNode(node.Type);
                 }
+            }
+
+            //variadic parameters O:
+            //params string[] strs -> strs: string...
+            //kindof.
+            if (node.Modifiers.Any(mod => mod.ToString() == "params"))
+            {
+                output = output.TrimEnd().TrimEnd('[', ']') + "...";
             }
             return output;
         }
