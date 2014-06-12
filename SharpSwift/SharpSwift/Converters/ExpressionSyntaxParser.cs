@@ -32,7 +32,7 @@ namespace SharpSwift.Converters
         public static string ObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             _creatingObject = SyntaxNode(node.Type);
-            var output = SyntaxNode(node.Type) + SyntaxNode(node.ArgumentList);
+            var output = _creatingObject + SyntaxNode(node.ArgumentList);
             _creatingObject = null;
             return output;
         }

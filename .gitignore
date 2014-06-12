@@ -215,3 +215,7 @@ pip-log.txt
 .mr.developer.cfg
 *.chk
 *.ide
+SharpSwift.sln.ide/
+SharpSwift/SharpSwift.sln.ide/
+*.ide
+SharpSwift/SharpSwift.sln.ide/storage.ide
