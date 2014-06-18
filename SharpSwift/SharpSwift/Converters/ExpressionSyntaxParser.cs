@@ -31,9 +31,34 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(ObjectCreationExpressionSyntax))]
         public static string ObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
-            _creatingObject = SyntaxNode(node.Type);
-            var output = _creatingObject + SyntaxNode(node.ArgumentList);
-            _creatingObject = null;
+            //Name all the parameters
+            //Thanks! http://stackoverflow.com/questions/24174602/get-constructor-declaration-from-objectcreationexpressionsyntax-with-roslyn/24191494#24191494
+            var symbol = model.GetSymbolInfo(node).Symbol as IMethodSymbol;
+
+            var newArgumentListArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+            for (int i = 0; i < node.ArgumentList.Arguments.Count; i++)
+            {
+                var oldArgumentSyntax = node.ArgumentList.Arguments[i];
+                var parameterName = symbol.Parameters[i].Name;
+
+                var identifierSyntax = SyntaxFactory.IdentifierName(parameterName);
+                var nameColonSyntax = SyntaxFactory
+                    .NameColon(identifierSyntax)
+                    .WithTrailingTrivia(SyntaxFactory.Whitespace(" "));
+
+                var newArgumentSyntax = SyntaxFactory.Argument(
+                    nameColonSyntax,
+                    oldArgumentSyntax.RefOrOutKeyword,
+                    oldArgumentSyntax.Expression);
+
+                newArgumentListArguments = newArgumentListArguments.Add(newArgumentSyntax);
+            }
+
+            //NOTE: this takes out node.parent and everything, and probably screws with syntaxmodel stuff too
+            var argList = SyntaxFactory.ArgumentList(newArgumentListArguments);
+            var newNode = SyntaxFactory.ObjectCreationExpression(node.NewKeyword, node.Type, argList, node.Initializer);
+
+            var output = SyntaxNode(newNode.Type) + SyntaxNode(newNode.ArgumentList);
             return output;
         }
 

@@ -7,9 +7,7 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        //TODO: _creatingObject is sketch. look into other ways to do this
-        private static string _creatingObject = null;
-
+        //NOTE: you shouldn't use anything special in Argument or ArgumentList - check ObjectCreationExpression FMI
         [ParsesType(typeof(ArgumentSyntax))]
         public static string Argument(ArgumentSyntax node)
         {
@@ -17,11 +15,6 @@ namespace SharpSwift.Converters
             if (node.NameColon != null)
             {
                 output = SyntaxNode(node.NameColon.Name) + ": " + output;
-            }
-            else if(_creatingObject != null)
-            {
-                //In Swift, object creation arguments must be named
-                Console.WriteLine("WARNING: Non-named argument found while creating object \"" + _creatingObject + "\".");
             }
             return output;
         }
