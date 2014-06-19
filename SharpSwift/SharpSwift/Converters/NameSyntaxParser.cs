@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace SharpSwift.Converters
 {
@@ -14,6 +15,24 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(IdentifierNameSyntax))]
         public static string IdentifierName(IdentifierNameSyntax node)
         {
+            //Looks for an ExportAttribute
+            var symbol = model.GetSymbolInfo(node).Symbol;
+            string nameToUse = null;
+            if (symbol != null)
+            {
+                //Check for an [Export()] attribute
+                var exportAttr = symbol.GetAttributes().FirstOrDefault(attr => attr.AttributeClass.Name.Contains("ExportAttribute"));
+                if (exportAttr != null)
+                {
+                    nameToUse = exportAttr.ConstructorArguments[0].Value.ToString();
+                }
+            }
+
+            if(nameToUse != null)
+            {
+                return nameToUse;
+            }
+
             return Type(node.Identifier.Text);
         }
 

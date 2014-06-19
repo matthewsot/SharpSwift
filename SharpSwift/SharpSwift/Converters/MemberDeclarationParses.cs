@@ -10,20 +10,32 @@ namespace SharpSwift.Converters
     partial class ConvertToSwift
     {
         [ParsesType(typeof (ClassDeclarationSyntax))]
-        public static string ClassDeclaration(ClassDeclarationSyntax classSyntax)
+        public static string ClassDeclaration(ClassDeclarationSyntax node)
         {
+            //Looks for an ExportAttribute
+            string nameToUse = null;
+            if (node.AttributeLists != null)
+            {
+                var attrLists = node.AttributeLists.FirstOrDefault(attrList => attrList.Attributes.Any(attr => attr.Name.ToString().Contains("Export")));
+                if (attrLists != null)
+                {
+                    var exportAttr = attrLists.Attributes.First(attr => attr.Name.ToString().Contains("Export"));
+                    nameToUse = SyntaxNode(exportAttr.ArgumentList.Arguments[0].Expression).Trim('"');
+                }
+            }
+
             var output = "";
-            output += "class " + classSyntax.Identifier.Text;
+            output += "class " + (nameToUse ?? node.Identifier.Text);
 
             //parse the base type, if there is one
-            var baseType = classSyntax.BaseList.Types.OfType<IdentifierNameSyntax>().FirstOrDefault();
-            if (baseType != null)
+            if (node.BaseList != null)
             {
+                var baseType = node.BaseList.Types.OfType<IdentifierNameSyntax>().FirstOrDefault();
                 output += ": " + SyntaxNode(baseType);
             }
             output += " {\r\n";
 
-            output += string.Join("", classSyntax.Members.Select(SyntaxNode));
+            output += string.Join("", node.Members.Select(SyntaxNode));
 
             return output + "}\r\n";
         }
@@ -31,7 +43,16 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (MethodDeclarationSyntax))]
         public static string MethodDeclaration(MethodDeclarationSyntax node)
         {
-            var output = "func " + node.Identifier.Text;
+            //Looks for an ExportAttribute
+            string nameToUse = null;
+            if(node.AttributeLists != null)
+            {
+                var attrLists = node.AttributeLists.FirstOrDefault(attrList => attrList.Attributes.Any(attr => attr.Name.ToString().Contains("Export")));
+                var exportAttr = attrLists.Attributes.First(attr => attr.Name.ToString().Contains("Export"));
+                nameToUse = SyntaxNode(exportAttr.ArgumentList.Arguments[0].Expression).Trim('"');
+            }
+
+            var output = "func " + (nameToUse ?? node.Identifier.Text);
 
             if (node.TypeParameterList != null) //public string Something<T>
             {

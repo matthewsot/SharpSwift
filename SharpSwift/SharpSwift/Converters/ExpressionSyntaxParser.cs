@@ -36,6 +36,7 @@ namespace SharpSwift.Converters
             var symbol = model.GetSymbolInfo(node).Symbol as IMethodSymbol;
 
             var newArgumentListArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+
             for (int i = 0; i < node.ArgumentList.Arguments.Count; i++)
             {
                 var oldArgumentSyntax = node.ArgumentList.Arguments[i];
@@ -58,7 +59,7 @@ namespace SharpSwift.Converters
             var argList = SyntaxFactory.ArgumentList(newArgumentListArguments);
             var newNode = SyntaxFactory.ObjectCreationExpression(node.NewKeyword, node.Type, argList, node.Initializer);
 
-            var output = SyntaxNode(newNode.Type) + SyntaxNode(newNode.ArgumentList);
+            var output = SyntaxNode(node.Type) + SyntaxNode(newNode.ArgumentList);
             return output;
         }
 

@@ -5,11 +5,21 @@ using System.Text;
 
 namespace SharpSwift
 {
+    [Export("anotherClass")]
+    class AnotherClass
+    {
+        [Export("something")]
+        public static void SomeThing()
+        {
+            return;
+        }
+    }
     class test : ASCIIEncoding
     {
-        private string somdething = "123";
+        /*private string somdething = "123";
         //private static string _something { get; set; }
 
+        [Export("doSomething")]
         private static T DoSomething<T>(T input, params string[] pms)
         {
             return input;
@@ -20,10 +30,14 @@ namespace SharpSwift
             Some = 1,
             Another,
             Third = 3
-        }
-
+        }*/
+        
+        [Export("Test")]
         public test(string something)
         {
+            AnotherClass.SomeThing();
+            var m = new AnotherClass();
+            /*
             var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};
             var y = new test("hello");
