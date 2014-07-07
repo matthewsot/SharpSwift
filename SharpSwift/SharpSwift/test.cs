@@ -37,6 +37,7 @@ namespace SharpSwift
         {
             AnotherClass.SomeThing();
             var m = new AnotherClass();
+            const string constant = "123";
             /*
             var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};

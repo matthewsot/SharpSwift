@@ -48,8 +48,11 @@ namespace SharpSwift.Converters
             if(node.AttributeLists != null)
             {
                 var attrLists = node.AttributeLists.FirstOrDefault(attrList => attrList.Attributes.Any(attr => attr.Name.ToString().Contains("Export")));
-                var exportAttr = attrLists.Attributes.First(attr => attr.Name.ToString().Contains("Export"));
-                nameToUse = SyntaxNode(exportAttr.ArgumentList.Arguments[0].Expression).Trim('"');
+                if (attrLists != null)
+                {
+                    var exportAttr = attrLists.Attributes.First(attr => attr.Name.ToString().Contains("Export"));
+                    nameToUse = SyntaxNode(exportAttr.ArgumentList.Arguments[0].Expression).Trim('"');
+                }
             }
 
             var output = "func " + (nameToUse ?? node.Identifier.Text);

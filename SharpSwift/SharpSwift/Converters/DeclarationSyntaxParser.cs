@@ -9,6 +9,10 @@ namespace SharpSwift.Converters
         public static string VariableDeclaration(VariableDeclarationSyntax node)
         {
             var output = "var ";
+            if (node.Parent is LocalDeclarationStatementSyntax && ((LocalDeclarationStatementSyntax)node.Parent).IsConst)
+            {
+                output = "let ";
+            }
             foreach (var currVar in node.Variables)
             {
                 output += currVar.Identifier.Text;
