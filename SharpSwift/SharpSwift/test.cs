@@ -57,6 +57,7 @@ namespace SharpSwift
                     var mdf = 3;
                     break;
                 case "456":
+                case "754":
                     var d = 2;
                     break;
                 case "643":

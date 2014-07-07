@@ -25,13 +25,27 @@ namespace SharpSwift.Converters
             return output;
         }
 
+        [ParsesType(typeof (SwitchLabelSyntax))]
+        public static string SwitchLabel(SwitchLabelSyntax node)
+        {
+            if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.CaseKeyword))
+            {
+                return "case " + SyntaxNode(node.Value) + ":\r\n";
+            }
+            if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.DefaultKeyword))
+            {
+                return "default:\r\n";
+            }
+            return "";
+        }
+
         [ParsesType(typeof (SwitchSectionSyntax))]
         public static string SwitchSection(SwitchSectionSyntax node)
         {
-            var output = "case " + SyntaxNode(node.Labels.First().Value) + ":\r\n"; //todo multiple labels
-            if (node.Labels.First().IsKind(SyntaxKind.DefaultSwitchLabel))
+            var output = "";
+            foreach (var label in node.Labels)
             {
-                output = "default:\r\n";
+                output += SyntaxNode(label);
             }
 
             foreach (var statement in node.Statements)
