@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 //include Something.Else;
@@ -9,7 +10,7 @@ namespace SharpSwift
     class AnotherClass
     {
         [Export("something")]
-        public static void SomeThing()
+        public static void SomeThing<T>() where T : IEnumerable<string>, IEnumerator<bool>
         {
             return;
         }
@@ -35,7 +36,6 @@ namespace SharpSwift
         [Export("Test")]
         public test(string something)
         {
-            AnotherClass.SomeThing();
             var m = new AnotherClass();
             const string constant = "123";
             var intArray = new int[] {1, 2, 3};

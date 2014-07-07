@@ -28,7 +28,14 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(TypeParameterSyntax))]
         public static string TypeParameter(TypeParameterSyntax node)
         {
-            return node.Identifier.Text;
+            var constraint = "";
+            if (node.Parent.Parent is MethodDeclarationSyntax)
+            {
+                var typeConstraints = ((MethodDeclarationSyntax)node.Parent.Parent).ConstraintClauses;
+                var constraints = typeConstraints.FirstOrDefault(constr => SyntaxNode(constr.Name) == node.Identifier.Text).Constraints;
+                constraint = ": " + string.Join(", ", constraints); //TODO: check if this is the right syntax for multiple constraints
+            }
+            return node.Identifier.Text + constraint;
         }
 
         [ParsesType(typeof(TypeParameterListSyntax))]
