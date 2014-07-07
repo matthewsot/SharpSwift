@@ -59,6 +59,10 @@ namespace SharpSwift.Converters
         /// <returns>A string with the converted Swift code</returns>
         public static string SyntaxNode(SyntaxNode node)
         {
+            if (node == null)
+            {
+                return "";
+            }
             if (node.HasLeadingTrivia)
             {
                 foreach (var trivia in node.GetLeadingTrivia())

@@ -49,6 +49,22 @@ namespace SharpSwift
             {
                 var md = i;
             }
+
+            switch (constant)
+            {
+                case "123":
+                    var f = 1;
+                    var mdf = 3;
+                    break;
+                case "456":
+                    var d = 2;
+                    break;
+                case "643":
+                    var c = 3;
+                    break;
+                default:
+                    break;
+            }
             /*
             var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};
