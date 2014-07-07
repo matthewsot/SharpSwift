@@ -38,6 +38,12 @@ namespace SharpSwift
             AnotherClass.SomeThing();
             var m = new AnotherClass();
             const string constant = "123";
+            var intArray = new int[] {1, 2, 3};
+            var strArray = new[] {"hi", "bye", "why"};
+            foreach (var str in strArray)
+            {
+                
+            }
             /*
             var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};
