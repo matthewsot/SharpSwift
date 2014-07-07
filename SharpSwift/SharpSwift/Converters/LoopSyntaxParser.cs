@@ -12,5 +12,15 @@ namespace SharpSwift.Converters
             output += " in " + SyntaxNode(node.Expression) + " " + SyntaxNode(node.Statement);
             return output;
         }
+
+        [ParsesType(typeof (ForStatementSyntax))]
+        public static string ForStatement(ForStatementSyntax node)
+        {
+            var output = "for ";
+            output += SyntaxNode(node.Declaration) + "; " + SyntaxNode(node.Condition) + "; " + //TODO: these semicolons should be handled in their syntaxParsers
+                      SyntaxNode(node.Incrementors.First()).TrimEnd(); //TODO: handle multiple incrementors
+            output += " " + SyntaxNode(node.Statement);
+            return output;
+        }
     }
 }

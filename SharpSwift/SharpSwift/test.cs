@@ -44,6 +44,11 @@ namespace SharpSwift
             {
                 
             }
+
+            for (var i = 0; i < 10; i++)
+            {
+                var md = i;
+            }
             /*
             var yd = DoSomething("hello", "something", "another");
             var ints = new int[] {0, 1, 2};
