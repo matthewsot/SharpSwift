@@ -18,7 +18,7 @@ namespace SharpSwift.Converters
                 output += currVar.Identifier.Text;
                 if (!node.Type.IsVar)
                 {
-                    output += ": " + Type(node.Type);
+                    output += ": " + SyntaxNode(node.Type);
                 }
                 if (currVar.Initializer != null)
                 {

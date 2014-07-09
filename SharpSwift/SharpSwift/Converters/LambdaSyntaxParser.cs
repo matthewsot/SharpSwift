@@ -23,7 +23,7 @@ namespace SharpSwift.Converters
             
             if (node.Parameter.Type != null)
             {
-                output += ": " + Type(node.Parameter.Type);
+                output += ": " + SyntaxNode(node.Parameter.Type);
             }
 
             output += ") in\r\n";

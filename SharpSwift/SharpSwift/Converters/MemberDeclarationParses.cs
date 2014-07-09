@@ -59,7 +59,7 @@ namespace SharpSwift.Converters
 
             if (node.TypeParameterList != null) //public string Something<T>
             {
-                output += "<" + SyntaxNode(node.TypeParameterList) + ">";
+                output += SyntaxNode(node.TypeParameterList);
             }
 
             output += SyntaxNode(node.ParameterList);
@@ -135,7 +135,7 @@ namespace SharpSwift.Converters
         public static string PropertyDeclaration(PropertyDeclarationSyntax node)
         {
             var output = "var " + node.Identifier.Text;
-            output += ": " + Type(node.Type);
+            output += ": " + SyntaxNode(node.Type);
             //accessors not supported yet, basically makes a field
             return output + Semicolon(node.SemicolonToken);
         }

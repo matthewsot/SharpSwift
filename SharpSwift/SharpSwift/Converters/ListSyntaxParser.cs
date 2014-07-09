@@ -25,6 +25,12 @@ namespace SharpSwift.Converters
             return "(" + string.Join(", ", node.Arguments.Select(SyntaxNode)) + ")";
         }
 
+        [ParsesType(typeof(TypeArgumentListSyntax))]
+        public static string TypeArgumentList(TypeArgumentListSyntax node)
+        {
+            return "<" + string.Join(", ", node.Arguments.Select(SyntaxNode)) + ">";
+        }
+
         [ParsesType(typeof(TypeParameterSyntax))]
         public static string TypeParameter(TypeParameterSyntax node)
         {

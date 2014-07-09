@@ -6,12 +6,6 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        [ParsesType(typeof(PredefinedTypeSyntax))]
-        public static string PredefinedType(PredefinedTypeSyntax node)
-        {
-            return Type(node.Keyword.Text);
-        }
-
         [ParsesType(typeof(IdentifierNameSyntax))]
         public static string IdentifierName(IdentifierNameSyntax node)
         {
@@ -39,6 +33,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (GenericNameSyntax))]
         public static string GenericName(GenericNameSyntax node)
         {
+            //TODO: replace the screwed up Action<>/Func<> conversions w/ DNSwift implementations
             //Action<string, int> converts to (String, Int) -> Void
             if (node.Identifier.Text == "Action")
             {
@@ -52,13 +47,13 @@ namespace SharpSwift.Converters
                 //The last generic argument in Func<> is used as a return type
                 var allButLastArguments = node.TypeArgumentList.Arguments.Take(node.TypeArgumentList.Arguments.Count - 1);
 
-                output += string.Join(", ", allButLastArguments.Select(Type));
+                output += string.Join(", ", allButLastArguments.Select(SyntaxNode));
 
-                return output + ") -> " + Type(node.TypeArgumentList.Arguments.Last());
+                return output + ") -> " + SyntaxNode(node.TypeArgumentList.Arguments.Last());
             }
 
             //Something<another, thing> converts to Something<another, thing> :D
-            return node.Identifier.Text + "<" + SyntaxNode(node.TypeArgumentList) + ">";
+            return Type(node.Identifier.Text) + SyntaxNode(node.TypeArgumentList);
         }
     }
 }

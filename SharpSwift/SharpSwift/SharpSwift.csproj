@@ -73,6 +73,7 @@
     <Compile Include="Converters\InitializerSyntaxParser.cs" />
     <Compile Include="Converters\StatementSyntaxParser.cs" />
     <Compile Include="Converters\SyntaxNodeConverter.cs" />
+    <Compile Include="Converters\TypeParser.cs" />
     <Compile Include="ExportAttribute.cs" />
     <Compile Include="Indenter.cs" />
     <Compile Include="Program.cs" />

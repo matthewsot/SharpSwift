@@ -14,6 +14,12 @@ namespace SharpSwift.Converters
             return node.ToString();
         }
 
+        [ParsesType(typeof (PostfixUnaryExpressionSyntax))]
+        public static string PostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        {
+            return SyntaxNode(node.Operand) + node.OperatorToken.Text; //TODO: double check this stuff
+        }
+
         [ParsesType(typeof(MemberAccessExpressionSyntax))]
         public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 //include Something.Else;
 
@@ -38,7 +39,7 @@ namespace SharpSwift
         {
             var m = new AnotherClass();
             const string constant = "123";
-            var intArray = new int[] {1, 2, 3};
+            List<int> intArray = new int[] {1, 2, 3}.ToList();
             string[] strArray = new[] {"hi", "bye", "why"};
             foreach (var str in strArray)
             {

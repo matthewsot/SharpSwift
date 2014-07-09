@@ -25,39 +25,6 @@ namespace SharpSwift.Converters
         }
 
         /// <summary>
-        /// Returns the Swift equivilant for a C# type
-        /// </summary>
-        /// <param name="typeName">The C# type's identifier as a string</param>
-        /// <returns>The Swift equivilant type as a string</returns>
-        private static string Type(string typeName)
-        {
-            switch (typeName)
-            {
-                case "string":
-                    return "String";
-                case "char":
-                    return "Character";
-                case "int":
-                    return "Int";
-                case "void":
-                    return "Void";
-            }
-            return typeName;
-        }
-
-        [ParsesType(typeof(TypeSyntax))]
-        public static string Type(TypeSyntax node)
-        {
-            if (node is ArrayTypeSyntax)
-            {
-                var arrSyntax = (ArrayTypeSyntax) node;
-                return "[" + Type(arrSyntax.ElementType) + "]"; //TODO: rankspecifiers
-                //todo: or move arraytypesyntax to a separate parser
-            }
-            return Type(((PredefinedTypeSyntax)node).Keyword.Text);
-        }
-
-        /// <summary>
         /// Converts a C# Roslyn SyntaxNode to it's Swift equivilant
         /// </summary>
         /// <param name="node">Roslyn SyntaxNode representing the C# code to convert</param>
