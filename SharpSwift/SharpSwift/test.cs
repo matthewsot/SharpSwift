@@ -39,7 +39,7 @@ namespace SharpSwift
             var m = new AnotherClass();
             const string constant = "123";
             var intArray = new int[] {1, 2, 3};
-            var strArray = new[] {"hi", "bye", "why"};
+            string[] strArray = new[] {"hi", "bye", "why"};
             foreach (var str in strArray)
             {
                 

@@ -48,8 +48,13 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(TypeSyntax))]
         public static string Type(TypeSyntax node)
         {
-            var typeName = ((PredefinedTypeSyntax)node).Keyword.Text;
-            return Type(typeName);
+            if (node is ArrayTypeSyntax)
+            {
+                var arrSyntax = (ArrayTypeSyntax) node;
+                return "[" + Type(arrSyntax.ElementType) + "]"; //TODO: rankspecifiers
+                //todo: or move arraytypesyntax to a separate parser
+            }
+            return Type(((PredefinedTypeSyntax)node).Keyword.Text);
         }
 
         /// <summary>
