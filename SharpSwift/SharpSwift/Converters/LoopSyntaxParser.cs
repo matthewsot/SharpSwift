@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -64,12 +65,12 @@ namespace SharpSwift.Converters
         public static string SwitchStatement(SwitchStatementSyntax node)
         {
             var output = "switch ";
-            output += SyntaxNode(node.Expression) + " {\r\n";
+            output += SyntaxNode(node.Expression) + " {" + Environment.NewLine;
             foreach (var sect in node.Sections)
             {
                 output += SyntaxNode(sect);
             }
-            output += "}";
+            output += "}" + Environment.NewLine;
             return output;
         }
     }
