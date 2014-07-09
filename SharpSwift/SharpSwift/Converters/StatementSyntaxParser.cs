@@ -9,14 +9,14 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(UsingStatementSyntax))]
         public static string UsingStatement(UsingStatementSyntax node)
         {
-            var output = SyntaxNode(node.Declaration) + ";\r\n";
+            var output = SyntaxNode(node.Declaration) + ";" + NewLine;
 
             output += Block((BlockSyntax)node.Statement, false);
 
             //Swift calls deinit when you make a variable nil
 
             output += string.Join("",
-                node.Declaration.Variables.Select(variable => variable.Identifier.Text + " = nil;\r\n"));
+                node.Declaration.Variables.Select(variable => variable.Identifier.Text + " = nil;" + NewLine));
 
             return output;
         }
@@ -40,7 +40,7 @@ namespace SharpSwift.Converters
         {
             var output = node.IfKeyword.Text + " (";
             output += SyntaxNode(node.Condition);
-            output += ")\r\n" + SyntaxNode(node.Statement);
+            output += ")" + NewLine + SyntaxNode(node.Statement);
             if (node.Else != null)
             {
                 output += SyntaxNode(node.Else);

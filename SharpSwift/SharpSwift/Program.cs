@@ -62,7 +62,7 @@ namespace SharpSwift
                 var comment = trivia.ToString().TrimStart('/', '*').Trim();
                 if (comment.StartsWith("include"))
                 {
-                    output += comment + "\r\n";
+                    output += comment + "" + ConvertToSwift.NewLine;
                 }
             }
             return output;
@@ -72,9 +72,9 @@ namespace SharpSwift
         {
             Console.WriteLine("Parsing file " + path);
 
-            var output = "//Converted with SharpSwift - https://github.com/matthewsot/SharpSwift\r\n";
-            output += "//See https://github.com/matthewsot/DNSwift FMI about these includes\r\n\r\n";
-            output += "include DNSwift;\r\n";
+            var output = "//Converted with SharpSwift - https://github.com/matthewsot/SharpSwift" + ConvertToSwift.NewLine;
+            output += "//See https://github.com/matthewsot/DNSwift FMI about these includes" + ConvertToSwift.NewLine + ConvertToSwift.NewLine;
+            output += "include DNSwift;" + ConvertToSwift.NewLine;
 
             Document doc = null;
             if (solutionPath != null)
@@ -110,19 +110,20 @@ namespace SharpSwift
                 /*
                 if (usingDir.Name.ToString().StartsWith("System"))
                 {
-                    output += "include DNSwift." + usingDir.Name + ";\r\n";
+                    output += "include DNSwift." + usingDir.Name + ";" + ConvertToSwift.NewLine;
                 }
                 
-                else */if(usingDir.GetLeadingTrivia().Any(trivia => trivia.ToString().ToLower().TrimStart('/', '*').StartsWith("universal")))
+                else */
+                if (usingDir.GetLeadingTrivia().Any(trivia => trivia.ToString().ToLower().TrimStart('/', '*').StartsWith("universal")))
                 {
-                    output += "include " + usingDir.Name + ";\r\n";
+                    output += "include " + usingDir.Name + ";" + ConvertToSwift.NewLine;
                 }
 
                 output += GetIncludesFromTrivia(usingDir.GetLeadingTrivia());
             }
             output += GetIncludesFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added includes to the bottom
             output += GetIncludesFromTrivia(rootNamespace.GetLeadingTrivia());
-            output += "\r\n";
+            output += "" + ConvertToSwift.NewLine;
 
             foreach (var childClass in classes)
             {

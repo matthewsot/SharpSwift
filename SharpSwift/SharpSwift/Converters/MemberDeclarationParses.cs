@@ -33,11 +33,11 @@ namespace SharpSwift.Converters
                 var baseType = node.BaseList.Types.OfType<IdentifierNameSyntax>().FirstOrDefault();
                 output += ": " + SyntaxNode(baseType);
             }
-            output += " {\r\n";
+            output += " {" + NewLine;
 
             output += string.Join("", node.Members.Select(SyntaxNode));
 
-            return output + "}\r\n";
+            return output + "}" + NewLine;
         }
 
         [ParsesType(typeof (MethodDeclarationSyntax))]
@@ -112,9 +112,9 @@ namespace SharpSwift.Converters
                 break;
             }
 
-            output += " {\r\n";
+            output += " {" + NewLine;
 
-            output += string.Join(",\r\n", node.Members.Select(SyntaxNode)) + "\r\n}\r\n";
+            output += string.Join("," + NewLine, node.Members.Select(SyntaxNode)) + NewLine + "}" + NewLine;
             return output;
         }
 

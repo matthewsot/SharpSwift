@@ -31,11 +31,11 @@ namespace SharpSwift.Converters
         {
             if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.CaseKeyword))
             {
-                return "case " + SyntaxNode(node.Value) + ":\r\n";
+                return "case " + SyntaxNode(node.Value) + ":" + NewLine;
             }
             if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.DefaultKeyword))
             {
-                return "default:\r\n";
+                return "default:" + NewLine;
             }
             return "";
         }

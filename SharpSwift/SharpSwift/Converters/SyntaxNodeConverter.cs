@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -7,21 +8,22 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        public static string NewLine = Environment.NewLine;
         public static SemanticModel model;
 
         [ParsesType(typeof (BlockSyntax))]
         public static string Block(BlockSyntax node, bool includeBraces = true)
         {
-            var output = (includeBraces ? "{\r\n" : "");
+            var output = (includeBraces ? "{" + NewLine : "");
 
             output += string.Join("", node.ChildNodes().Select(SyntaxNode));
 
-            return output + (includeBraces ? "}\r\n" : "");
+            return output + (includeBraces ? "}" + NewLine : "");
         }
 
         private static string Semicolon(SyntaxToken semicolonToken)
         {
-            return semicolonToken.Text == ";" ? ";\r\n" : "";
+            return semicolonToken.Text == ";" ? ";" + NewLine : "";
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace SharpSwift.Converters
                 return matchedMethod.Invoke(s, new[] { node }).ToString();
             }
 
-            return node.ToString() + "\r\n";
+            return node.ToString() + "" + NewLine;
         }
     }
 }

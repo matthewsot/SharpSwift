@@ -11,8 +11,8 @@ namespace SharpSwift.Converters
         public static string ParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
             var output = "{ ";
-            output += SyntaxNode(node.ParameterList) + " in\r\n";
-            return output + Block((BlockSyntax)node.Body, false) + "\r\n}";
+            output += SyntaxNode(node.ParameterList) + " in" + NewLine;
+            return output + Block((BlockSyntax)node.Body, false) + NewLine + "}";
         }
 
         //a => return a.ToString();
@@ -26,8 +26,8 @@ namespace SharpSwift.Converters
                 output += ": " + SyntaxNode(node.Parameter.Type);
             }
 
-            output += ") in\r\n";
-            return output + Block((BlockSyntax)node.Body, false) + "\r\n}";
+            output += ") in" + NewLine;
+            return output + Block((BlockSyntax)node.Body, false) + NewLine + "}";
         }
     }
 }
