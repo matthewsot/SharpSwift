@@ -62,12 +62,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\AttributeSyntaxParser.cs" />
     <Compile Include="Converters\DeclarationSyntaxParser.cs" />
     <Compile Include="Converters\ExpressionSyntaxParser.cs" />
     <Compile Include="Converters\LambdaSyntaxParser.cs" />
     <Compile Include="Converters\LoopSyntaxParser.cs" />
     <Compile Include="Converters\ListSyntaxParser.cs" />
-    <Compile Include="Converters\MemberDeclarationParses.cs" />
+    <Compile Include="Converters\MemberDeclarationParser.cs" />
     <Compile Include="Converters\NameSyntaxParser.cs" />
     <Compile Include="Converters\ParsesTypeAttribute.cs" />
     <Compile Include="Converters\InitializerSyntaxParser.cs" />

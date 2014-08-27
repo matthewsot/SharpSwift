@@ -10,6 +10,7 @@ class anotherClass {
 	}
 }
 class test: ASCIIEncoding {
+	@Test var something: String = "123";
 	init(something: String) {
 		var m = anotherClass();
 		let constant: String = "123";

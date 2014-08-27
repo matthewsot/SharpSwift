@@ -19,8 +19,31 @@ namespace SharpSwift.Converters
             return output;
         }
 
+        [ParsesType(typeof(AttributeArgumentSyntax))]
+        public static string AttributeArgument(AttributeArgumentSyntax node)
+        {
+            var output = SyntaxNode(node.Expression);
+            if (node.NameColon != null)
+            {
+                output = SyntaxNode(node.NameColon.Name) + ": " + output;
+            }
+            return output;
+        }
+
         [ParsesType(typeof (ArgumentListSyntax))]
         public static string ArgumentList(ArgumentListSyntax node)
+        {
+            return "(" + string.Join(", ", node.Arguments.Select(SyntaxNode)) + ")";
+        }
+
+        [ParsesType(typeof(AttributeListSyntax))]
+        public static string AttributeList(AttributeListSyntax node)
+        {
+            return string.Join(" ", node.Attributes.Select(SyntaxNode));
+        }
+
+        [ParsesType(typeof(AttributeArgumentListSyntax))]
+        public static string AttributeArgumentList(AttributeArgumentListSyntax node)
         {
             return "(" + string.Join(", ", node.Arguments.Select(SyntaxNode)) + ")";
         }

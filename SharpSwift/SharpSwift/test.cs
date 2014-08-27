@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 //include Something.Else;
+using SharpSwift.Attributes;
 
 namespace SharpSwift
 {
@@ -33,6 +34,8 @@ namespace SharpSwift
             Another,
             Third = 3
         }*/
+
+        [Test] private string something = "123";
         
         [Export("Test")]
         public test(string something)
