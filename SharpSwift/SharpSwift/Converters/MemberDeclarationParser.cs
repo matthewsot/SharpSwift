@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,7 +11,7 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        private static Tuple<string, string> ParseAttributes(SyntaxList<AttributeListSyntax> attributeLists)
+        private static Tuple<string, string> ParseAttributes(SyntaxList<AttributeListSyntax> attributeLists, string separator = " ")
         {
             var output = "";
             string exportAs = null;
@@ -27,7 +28,7 @@ namespace SharpSwift.Converters
                             continue;
                         }
 
-                        output += SyntaxNode(attribute) + " ";
+                        output += SyntaxNode(attribute) + separator;
                     }
                 }
             }
@@ -35,12 +36,26 @@ namespace SharpSwift.Converters
             return new Tuple<string, string>(output, exportAs);
         }
 
+        private static string ParseModifiers(SyntaxTokenList modifiers)
+        {
+            return string.Join(" ", modifiers.Select(modifier =>
+            {
+                switch (modifier.Text)
+                {
+                    case "internal":
+                        return "public"; //Swift doesn't have internal
+                    default:
+                        return modifier.Text;
+                }
+            })) + " ";
+        }
+
         //TODO: rewrite the MemberDeclarationParsers
 
         [ParsesType(typeof (ClassDeclarationSyntax))]
         public static string ClassDeclaration(ClassDeclarationSyntax node)
         {
-            var parsedAttributes = ParseAttributes(node.AttributeLists);
+            var parsedAttributes = ParseAttributes(node.AttributeLists, NewLine);
 
             var output = parsedAttributes.Item1;
             var nameToUse = parsedAttributes.Item2;
@@ -57,7 +72,7 @@ namespace SharpSwift.Converters
 
             output += string.Join("", node.Members.Select(SyntaxNode));
 
-            return output + "}" + NewLine;
+            return output + "}" + NewLine + NewLine;
         }
 
         [ParsesType(typeof (MethodDeclarationSyntax))]
@@ -67,6 +82,8 @@ namespace SharpSwift.Converters
 
             var output = parsedAttributes.Item1;
             var nameToUse = parsedAttributes.Item2;
+
+            output += ParseModifiers(node.Modifiers);
 
             output += "func " + (nameToUse ?? node.Identifier.Text);
 
@@ -132,7 +149,7 @@ namespace SharpSwift.Converters
 
             output += " {" + NewLine;
 
-            output += string.Join("," + NewLine, node.Members.Select(SyntaxNode)) + NewLine + "}" + NewLine;
+            output += string.Join("," + NewLine, node.Members.Select(SyntaxNode)) + NewLine + "}" + NewLine + NewLine;
             return output;
         }
 

@@ -14,6 +14,11 @@ namespace SharpSwift.Converters
         {
             var symbolInfo = model.GetSymbolInfo(node.Name);
 
+            if(symbolInfo.Symbol == null)
+            {
+                return false;
+            }
+
             var containingNamespace = symbolInfo.Symbol.ContainingSymbol.ContainingNamespace;
 
             var containingContainingNamespace = containingNamespace.ContainingNamespace;
@@ -30,7 +35,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof (AttributeSyntax))]
         public static string AttributeSyntax(AttributeSyntax node)
         {
-            var output = "@" + SyntaxNode(node.Name);
+            var output = "@" + SyntaxNode(node.Name).TrimEnd('!');
 
             if (IsSharpSwiftAttribute(node, "ExportAttribute"))
             {

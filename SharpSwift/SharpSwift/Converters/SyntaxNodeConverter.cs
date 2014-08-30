@@ -18,7 +18,7 @@ namespace SharpSwift.Converters
 
             output += string.Join("", node.ChildNodes().Select(SyntaxNode));
 
-            return output + (includeBraces ? "}" + NewLine : "");
+            return output + (includeBraces ? "}" + NewLine + NewLine : "");
         }
 
         private static string Semicolon(SyntaxToken semicolonToken)

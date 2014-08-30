@@ -83,7 +83,7 @@ namespace SharpSwift.Converters
             {
                 if (node.Type is GenericNameSyntax)
                 {
-                    output += SyntaxNode(node.Type);
+                    output += ": " + SyntaxNode(node.Type);
                 }
                 else if (node.Type is IdentifierNameSyntax)
                 {

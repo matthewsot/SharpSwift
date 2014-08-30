@@ -82,6 +82,12 @@ namespace SharpSwift.Converters
             return SyntaxNode(node.Expression) + Semicolon(node.SemicolonToken);
         }
 
+        [ParsesType(typeof(BaseExpressionSyntax))]
+        public static string BaseExpression(BaseExpressionSyntax node)
+        {
+            return "super";
+        }
+
         [ParsesType(typeof(LiteralExpressionSyntax))]
         public static string LiteralExpression(LiteralExpressionSyntax node)
         {

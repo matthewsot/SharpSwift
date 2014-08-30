@@ -52,6 +52,21 @@ namespace SharpSwift.Converters
                 return output + ") -> " + SyntaxNode(node.TypeArgumentList.Arguments.Last());
             }
 
+            if (node.Identifier.Text == "Unwrapped")
+            {
+                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!') + "!";
+            }
+
+            if (node.Identifier.Text == "Optional")
+            {
+                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!') + "?";
+            }
+
+            if (node.Identifier.Text == "AmbiguousWrapping")
+            {
+                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!');
+            }
+
             //Something<another, thing> converts to Something<another, thing> :D
             return Type(node.Identifier.Text) + SyntaxNode(node.TypeArgumentList);
         }

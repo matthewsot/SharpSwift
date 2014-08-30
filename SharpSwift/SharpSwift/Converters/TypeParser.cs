@@ -9,7 +9,7 @@ namespace SharpSwift.Converters
         /// </summary>
         /// <param name="typeName">The C# type's identifier as a string</param>
         /// <returns>The Swift equivilant type as a string</returns>
-        private static string Type(string typeName)
+        private static string Type(string typeName, bool implyUnwrapped = true)
         {
             switch (typeName)
             {
@@ -21,8 +21,10 @@ namespace SharpSwift.Converters
                     return "Int";
                 case "void":
                     return "Void";
+                case "bool":
+                    return "Bool";
             }
-            return typeName;
+            return typeName + (implyUnwrapped ? "!" : "");
         }
 
         [ParsesType(typeof (ArrayTypeSyntax))]

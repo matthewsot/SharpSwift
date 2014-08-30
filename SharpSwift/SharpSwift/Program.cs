@@ -105,22 +105,13 @@ namespace SharpSwift
 
             foreach (var usingDir in root.Usings)
             {
-                //Swift doesn't currently have a good namespace system
-                //So for now pretty much everything goes under DNSwift. No other imports neccessary
-                /*
-                if (usingDir.Name.ToString().StartsWith("System"))
+                if (!usingDir.Name.ToString().StartsWith("SharpSwift."))
                 {
-                    output += "include DNSwift." + usingDir.Name + ";" + ConvertToSwift.NewLine;
+                    output += "include " + usingDir.Name.ToString().Replace(".", "") + ";\r\n";
                 }
-                
-                else */
-                if (usingDir.GetLeadingTrivia().Any(trivia => trivia.ToString().ToLower().TrimStart('/', '*').StartsWith("universal")))
-                {
-                    output += "include " + usingDir.Name + ";" + ConvertToSwift.NewLine;
-                }
-
                 output += GetIncludesFromTrivia(usingDir.GetLeadingTrivia());
             }
+
             output += GetIncludesFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added includes to the bottom
             output += GetIncludesFromTrivia(rootNamespace.GetLeadingTrivia());
             output += "" + ConvertToSwift.NewLine;

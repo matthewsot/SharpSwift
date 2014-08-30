@@ -6,15 +6,6 @@ using System.Threading.Tasks;
 
 namespace SharpSwift.Attributes
 {
-    class ExportAttribute : Attribute
-    {
-        public string ExportAs { get; set; }
-        public ExportAttribute(string exportAs)
-        {
-            ExportAs = exportAs;
-        }
-    }
-
     internal class TestAttribute : Attribute
     {
         public string ExportAs { get; set; }
