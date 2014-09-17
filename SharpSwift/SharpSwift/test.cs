@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-//include Something.Else;
+//import Something.Else;
 using SharpSwift.Attributes;
 
 namespace SharpSwift

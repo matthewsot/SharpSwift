@@ -12,13 +12,13 @@ namespace SharpSwift.Converters
         public static SemanticModel model;
 
         [ParsesType(typeof (BlockSyntax))]
-        public static string Block(BlockSyntax node, bool includeBraces = true)
+        public static string Block(BlockSyntax node, bool importBraces = true)
         {
-            var output = (includeBraces ? "{" + NewLine : "");
+            var output = (importBraces ? "{" + NewLine : "");
 
             output += string.Join("", node.ChildNodes().Select(SyntaxNode));
 
-            return output + (includeBraces ? "}" + NewLine + NewLine : "");
+            return output + (importBraces ? "}" + NewLine + NewLine : "");
         }
 
         private static string Semicolon(SyntaxToken semicolonToken)

@@ -50,7 +50,7 @@ namespace SharpSwift
         }
 
 
-        static string GetIncludesFromTrivia(SyntaxTriviaList triviaList)
+        static string GetImportsFromTrivia(SyntaxTriviaList triviaList)
         {
             var output = "";
             foreach (var trivia in triviaList)
@@ -60,7 +60,7 @@ namespace SharpSwift
                     continue;
 
                 var comment = trivia.ToString().TrimStart('/', '*').Trim();
-                if (comment.StartsWith("include"))
+                if (comment.StartsWith("import"))
                 {
                     output += comment + "" + ConvertToSwift.NewLine;
                 }
@@ -73,8 +73,8 @@ namespace SharpSwift
             Console.WriteLine("Parsing file " + path);
 
             var output = "//Converted with SharpSwift - https://github.com/matthewsot/SharpSwift" + ConvertToSwift.NewLine;
-            output += "//See https://github.com/matthewsot/DNSwift FMI about these includes" + ConvertToSwift.NewLine + ConvertToSwift.NewLine;
-            output += "include DNSwift;" + ConvertToSwift.NewLine;
+            output += "//See https://github.com/matthewsot/DNSwift FMI about these imports" + ConvertToSwift.NewLine + ConvertToSwift.NewLine;
+            output += "import DNSwift;" + ConvertToSwift.NewLine;
 
             Document doc = null;
             if (solutionPath != null)
@@ -107,13 +107,13 @@ namespace SharpSwift
             {
                 if (!usingDir.Name.ToString().StartsWith("SharpSwift."))
                 {
-                    output += "include " + usingDir.Name.ToString().Replace(".", "") + ";\r\n";
+                    output += "import " + usingDir.Name.ToString().Replace(".", "") + ";\r\n";
                 }
-                output += GetIncludesFromTrivia(usingDir.GetLeadingTrivia());
+                output += GetImportsFromTrivia(usingDir.GetLeadingTrivia());
             }
 
-            output += GetIncludesFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added includes to the bottom
-            output += GetIncludesFromTrivia(rootNamespace.GetLeadingTrivia());
+            output += GetImportsFromTrivia(root.Usings.Last().GetTrailingTrivia()); //in case they added imports to the bottom
+            output += GetImportsFromTrivia(rootNamespace.GetLeadingTrivia());
             output += "" + ConvertToSwift.NewLine;
 
             foreach (var childClass in classes)
