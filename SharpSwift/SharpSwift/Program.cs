@@ -11,43 +11,35 @@ namespace SharpSwift
 {
     class Program
     {
+        static void Main(string[] args)
+        {
+            var argData = new ArgData(args);
+            if (!argData.Clean())
+            {
+                Console.WriteLine("Sorry, there was a fatal error with your arguments");
+                return;
+            }
+
+            var parsed = ParseFile(argData.InputPath, argData.SlnPath, argData.Indent);
+            using (var writer = new StreamWriter(argData.OutputPath))
+            {
+                writer.Write(parsed);
+                writer.Flush();
+            }
+
+            Console.WriteLine("Done.");
+            Console.ReadLine();
+        }
+
         private static Document GetDocumentFromSolution(string solutionPath, string documentPath)
         {
             var workspace = MSBuildWorkspace.Create();
             var solution = workspace.OpenSolutionAsync(solutionPath).Result;
 
-            foreach (var document in solution.Projects.SelectMany(project => project.Documents))
-            {
-                if (document.FilePath.EndsWith(documentPath))
-                {
-                    return document;
-                }
-            }
-            return null;
+            return solution.Projects.SelectMany(project => project.Documents)
+                                    .FirstOrDefault(document => document.FilePath.EndsWith(documentPath));
         }
 
-        static string FindSolution(string path, int levels = 0)
-        {
-            if (File.Exists(path))
-            {
-                path = (new FileInfo(path)).DirectoryName;
-            }
-
-            if (levels == 5) //too much recursion is bad o:
-            {
-                return "";
-            }
-
-            foreach (var file in Directory.GetFiles(path))
-            {
-                if (file.EndsWith(".sln"))
-                {
-                    return file;
-                }
-            }
-
-            return FindSolution((new DirectoryInfo(path)).Parent.FullName);
-        }
 
 
         static string GetImportsFromTrivia(SyntaxTriviaList triviaList)
@@ -122,73 +114,6 @@ namespace SharpSwift
             }
 
             return doIndent ? Indenter.IndentDocument(output) : output;
-        }
-
-        static void Main(string[] args)
-        {
-            var inPath = args.FirstOrDefault(arg => !arg.StartsWith("-"));
-            if(args.Contains("-input"))
-            {
-                inPath = args[args.ToList().IndexOf("-input") + 1];
-            }
-
-            var doIndent = !args.Contains("-noindent");
-
-            var outPath = args.ToList().FirstOrDefault(arg => arg != inPath && !arg.StartsWith("-"));
-            if (args.Contains("-output"))
-            {
-                outPath = args[args.ToList().IndexOf("-output") + 1];
-            }
-
-            if (inPath == null)
-            {
-                Console.WriteLine("You must specify an input file");
-                return;
-            }
-
-            var solution = args.Contains("-solution") ? args[args.ToList().IndexOf("-solution") + 1] : FindSolution(inPath);
-
-            inPath = inPath.Trim('"');
-            outPath = (outPath == null) ? null : outPath.Trim('"');
-
-            if (Directory.Exists(inPath))
-            {
-                //It's a folder
-                foreach (var file in Directory.GetFiles(inPath))
-                {
-                    if (!file.EndsWith(".cs"))
-                        continue;
-
-                    var parsed = ParseFile(file, solution, doIndent);
-
-                    var outputPath = outPath ?? file.Replace(".cs", ".swift");
-                    if (!outputPath.EndsWith(".swift"))
-                    {
-                        outputPath = outputPath.TrimEnd('\\') + "\\" + file.Split('\\').Last().Replace(".cs", ".swift");
-                    }
-
-                    using (var writer = new StreamWriter(outputPath))
-                    {
-                        writer.Write(parsed);
-                        writer.Flush();
-                    }
-                }
-            }
-            else if (File.Exists(inPath) && inPath.EndsWith(".cs"))
-            {
-                //It's a file
-                var parsed = ParseFile(inPath, solution, doIndent);
-
-                var outputPath = outPath ?? inPath.Replace(".cs", ".swift");
-
-                using (var writer = new StreamWriter(outputPath))
-                {
-                    writer.Write(parsed);
-                    writer.Flush();
-                }
-            }
-            Console.WriteLine("Done.");
-            Console.ReadLine();
         }
     }
 }
