@@ -5,110 +5,163 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
+    //TODO: Double check & add examples to all the expressions
     partial class ConvertToSwift
     {
-        //TODO: check this out
+        /// <summary>
+        /// Converts an arbitrary expression to Swift
+        /// </summary>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift expression.</returns>
         [ParsesType(typeof(ExpressionSyntax))]
-        public static string Expression(ExpressionSyntax node)
+        public static string Expression(ExpressionSyntax expression)
         {
-            return node.ToString();
+            return expression.ToString();
         }
 
+        /// <summary>
+        /// Converts an expression statement (with semicolon) to Swift
+        /// </summary>
+        /// <param name="statement">The statement to convert</param>
+        /// <returns>The converted Swift statement</returns>
+        [ParsesType(typeof(ExpressionStatementSyntax))]
+        public static string ExpressionStatement(ExpressionStatementSyntax statement)
+        {
+            return SyntaxNode(statement.Expression) + Semicolon(statement.SemicolonToken);
+        }
+
+        /// <summary>
+        /// Converts a postfix unary expression to Swift
+        /// </summary>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift expression</returns>
         [ParsesType(typeof (PostfixUnaryExpressionSyntax))]
-        public static string PostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        public static string PostfixUnaryExpression(PostfixUnaryExpressionSyntax expression)
         {
-            return SyntaxNode(node.Operand) + node.OperatorToken.Text; //TODO: double check this stuff
+            return SyntaxNode(expression.Operand) + expression.OperatorToken.Text;
         }
 
+        /// <summary>
+        /// Converts a member access expression to Swift
+        /// </summary>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift expression</returns>
         [ParsesType(typeof(MemberAccessExpressionSyntax))]
-        public static string MemberAccessExpression(MemberAccessExpressionSyntax node)
+        public static string MemberAccessExpression(MemberAccessExpressionSyntax expression)
         {
-            return SyntaxNode(node.Expression) + node.OperatorToken.Text + SyntaxNode(node.Name);
+            return SyntaxNode(expression.Expression) + expression.OperatorToken.Text + SyntaxNode(expression.Name);
         }
 
-        //something.Method("arg")
+        /// <summary>
+        /// Converts an invocation expression to Swift
+        /// </summary>
+        /// <example>something.Method("arg")</example>
+        /// <param name="invocation">The invocation expression to convert</param>
+        /// <returns>The converted Swift code</returns>
         [ParsesType(typeof(InvocationExpressionSyntax))]
-        public static string InvocationExpression(InvocationExpressionSyntax node)
+        public static string InvocationExpression(InvocationExpressionSyntax invocation)
         {
-            return SyntaxNode(node.Expression) + SyntaxNode(node.ArgumentList);
+            return SyntaxNode(invocation.Expression) + SyntaxNode(invocation.ArgumentList);
         }
 
-        //new Something()
+        /// <summary>
+        /// Converts an object creation expression to Swift
+        /// </summary>
+        /// <example>new Something()</example>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift object creation expression</returns>
         [ParsesType(typeof(ObjectCreationExpressionSyntax))]
-        public static string ObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        public static string ObjectCreationExpression(ObjectCreationExpressionSyntax expression)
         {
-            //Name all the parameters
+            //Name all the arguments, since Swift usually requires named arguments when you create new objects.
             //Thanks! http://stackoverflow.com/questions/24174602/get-constructor-declaration-from-objectcreationexpressionsyntax-with-roslyn/24191494#24191494
-            var symbol = Model.GetSymbolInfo(node).Symbol as IMethodSymbol;
+            var symbol = Model.GetSymbolInfo(expression).Symbol as IMethodSymbol;
 
-            var newArgumentListArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+            var namedArgumentsList = new SeparatedSyntaxList<ArgumentSyntax>();
 
-            for (int i = 0; i < node.ArgumentList.Arguments.Count; i++)
+            for (var i = 0; i < expression.ArgumentList.Arguments.Count; i++)
             {
-                var oldArgumentSyntax = node.ArgumentList.Arguments[i];
+                var oldArgumentSyntax = expression.ArgumentList.Arguments[i];
                 var parameterName = symbol.Parameters[i].Name;
 
-                var identifierSyntax = SyntaxFactory.IdentifierName(parameterName);
                 var nameColonSyntax = SyntaxFactory
-                    .NameColon(identifierSyntax)
+                    .NameColon(SyntaxFactory.IdentifierName(parameterName))
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "));
 
-                var newArgumentSyntax = SyntaxFactory.Argument(
-                    nameColonSyntax,
-                    oldArgumentSyntax.RefOrOutKeyword,
-                    oldArgumentSyntax.Expression);
+                var namedArgumentSyntax = SyntaxFactory.Argument(nameColonSyntax, oldArgumentSyntax.RefOrOutKeyword, oldArgumentSyntax.Expression);
 
-                newArgumentListArguments = newArgumentListArguments.Add(newArgumentSyntax);
+                namedArgumentsList = namedArgumentsList.Add(namedArgumentSyntax);
             }
 
-            //NOTE: this takes out node.parent and everything, and probably screws with syntaxmodel stuff too
-            var argList = SyntaxFactory.ArgumentList(newArgumentListArguments);
-            var newNode = SyntaxFactory.ObjectCreationExpression(node.NewKeyword, node.Type, argList, node.Initializer);
-
-            var output = SyntaxNode(node.Type) + SyntaxNode(newNode.ArgumentList);
-            return output;
+            //NOTE: this takes out expression.parent and everything, and probably screws with SyntaxModel stuff to
+            return SyntaxNode(expression.Type) + SyntaxNode(SyntaxFactory.ArgumentList(namedArgumentsList));
         }
 
-        //something (+/-/+=/etc) something_else
+        /// <summary>
+        /// Converts a binary expression to Swift
+        /// </summary>
+        /// <example>something (+/-/+=/etc) something_else</example>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift expression</returns>
         [ParsesType(typeof(BinaryExpressionSyntax))]
-        public static string BinaryExpression(BinaryExpressionSyntax node)
+        public static string BinaryExpression(BinaryExpressionSyntax expression)
         {
-            return SyntaxNode(node.Left) + " " + node.OperatorToken.Text + " " + SyntaxNode(node.Right);
+            return SyntaxNode(expression.Left) + " " + expression.OperatorToken.Text + " " + SyntaxNode(expression.Right);
         }
 
-        [ParsesType(typeof(ExpressionStatementSyntax))]
-        public static string ExpressionStatement(ExpressionStatementSyntax node)
-        {
-            return SyntaxNode(node.Expression) + Semicolon(node.SemicolonToken);
-        }
-
+        /// <summary>
+        /// Converts a "base" expression to Swift
+        /// </summary>
+        /// <example>base</example>
+        /// <param name="expression">The expression to convet</param>
+        /// <returns>"super"</returns>
         [ParsesType(typeof(BaseExpressionSyntax))]
-        public static string BaseExpression(BaseExpressionSyntax node)
+        public static string BaseExpression(BaseExpressionSyntax expression)
         {
             return "super";
         }
 
+        /// <summary>
+        /// Converts a C# literal expression to Swift
+        /// </summary>
+        /// <example>"hello!"</example>
+        /// <example>123</example>
+        /// <param name="expression">The literal expression to convert</param>
+        /// <returns>The converted Swift literal</returns>
         [ParsesType(typeof(LiteralExpressionSyntax))]
-        public static string LiteralExpression(LiteralExpressionSyntax node)
+        public static string LiteralExpression(LiteralExpressionSyntax expression)
         {
-            switch (node.CSharpKind())
+            switch (expression.CSharpKind())
             {
+                //Swift doesn't use the same 'c' character literal syntax, instead you create a String and type annotate it as a Character
                 case SyntaxKind.CharacterLiteralExpression:
                     //this is sketch, probably shouldn't use char literals o.o
-                    return '"' + node.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
+                    return '"' + expression.Token.ValueText.Replace("\\'", "'").Replace("\"", "\\\"") + '"';
                 default:
-                    return node.ToString();
+                    return expression.ToString();
             }
         }
 
+        /// <summary>
+        /// Converts an implicit array to Swift
+        /// </summary>
+        /// <example>new[] { 1, 2, 3 }</example>
+        /// <param name="array">The implicit array to convert</param>
+        /// <returns>The converted Swift array</returns>
         [ParsesType(typeof(ImplicitArrayCreationExpressionSyntax))]
-        public static string ImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        public static string ImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax array)
         {
             var output = "[ ";
-            output += string.Join(", ", node.Initializer.Expressions.Select(SyntaxNode));
+            output += string.Join(", ", array.Initializer.Expressions.Select(SyntaxNode));
             return output + " ]";
         }
 
+        /// <summary>
+        /// Converts an explicit array to Swift
+        /// </summary>
+        /// <example>new string[] { 1, 2, 3 }</example>
+        /// <param name="node">The explicit array to convert</param>
+        /// <returns>The converted Swift array</returns>
         [ParsesType(typeof(ArrayCreationExpressionSyntax))]
         public static string ArrayCreationExpression(ArrayCreationExpressionSyntax node)
         {
