@@ -4,22 +4,43 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        //var something, something_else = "123";
-        [ParsesType(typeof(VariableDeclarationSyntax))]
-        public static string VariableDeclaration(VariableDeclarationSyntax node)
+        /// <summary>
+        /// Converts a local declaration statement to Swift.
+        /// Differs from VariableDeclaration in that it includes the semicolon.
+        /// </summary>
+        /// <example>var something = something_else;</example>
+        /// <param name="declaration">The LocalDeclarationStatementSyntax to convert</param>
+        /// <returns>The Swift declaration, including the semicolon if necessary</returns>
+        [ParsesType(typeof(LocalDeclarationStatementSyntax))]
+        public static string LocalDeclarationStatement(LocalDeclarationStatementSyntax declaration)
         {
-            var output = "var ";
-            if (node.Parent is LocalDeclarationStatementSyntax && ((LocalDeclarationStatementSyntax)node.Parent).IsConst)
-            {
-                output = "let ";
-            }
-            foreach (var currVar in node.Variables)
+            return SyntaxNode(declaration.Declaration) + Semicolon(declaration.SemicolonToken);
+        }
+
+        /// <summary>
+        /// Converts a variable declaration to Swift
+        /// </summary>
+        /// <example>var hello = 1</example>
+        /// <example>string something, something_else = "123"</example>
+        /// <param name="declaration">The VariableDeclarationSyntax to convert.</param>
+        /// <returns>A Swift variable declaration</returns>
+        [ParsesType(typeof(VariableDeclarationSyntax))]
+        public static string VariableDeclaration(VariableDeclarationSyntax declaration)
+        {
+            var isConst = declaration.Parent is LocalDeclarationStatementSyntax
+                          && ((LocalDeclarationStatementSyntax) declaration.Parent).IsConst;
+
+            var output = isConst ? "let " :  "var ";
+
+            foreach (var currVar in declaration.Variables)
             {
                 output += currVar.Identifier.Text;
-                if (!node.Type.IsVar)
+
+                if (!declaration.Type.IsVar)
                 {
-                    output += ": " + SyntaxNode(node.Type);
+                    output += ": " + SyntaxNode(declaration.Type);
                 }
+
                 if (currVar.Initializer != null)
                 {
                     output += " " + SyntaxNode(currVar.Initializer);
@@ -28,13 +49,6 @@ namespace SharpSwift.Converters
             }
 
             return output.TrimEnd(',', ' ');
-        }
-
-        //var something = something_else;
-        [ParsesType(typeof(LocalDeclarationStatementSyntax))]
-        public static string LocalDeclarationStatement(LocalDeclarationStatementSyntax node)
-        {
-            return SyntaxNode(node.Declaration) + Semicolon(node.SemicolonToken);
         }
     }
 }
