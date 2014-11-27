@@ -27,7 +27,7 @@ namespace SharpSwift.Converters
         }
 
         /// <summary>
-        /// Converts a C# Roslyn SyntaxNode to it's Swift equivilant
+        /// Converts a C# Roslyn SyntaxNode to its Swift equivilant
         /// </summary>
         /// <param name="node">Roslyn SyntaxNode representing the C# code to convert</param>
         /// <returns>A string with the converted Swift code</returns>
