@@ -13,24 +13,17 @@ namespace SharpSwift.Converters
         /// <returns>A boolean value representing whether it is or isn't the SharpSwift attribute</returns>
         private static bool IsSharpSwiftAttribute(AttributeSyntax attribute, string expectingName = null)
         {
-            var symbolInfo = Model.GetSymbolInfo(attribute.Name);
+            var symbol = Model.GetSymbolInfo(attribute.Name).Symbol;
+            if (symbol == null) return false;
 
-            if (symbolInfo.Symbol == null)
-            {
-                return false;
-            }
-
-            var containingNamespace = symbolInfo.Symbol.ContainingSymbol.ContainingNamespace;
+            var containingNamespace = symbol.ContainingSymbol.ContainingNamespace;
 
             var containingContainingNamespace = containingNamespace.ContainingNamespace;
-            if (containingContainingNamespace == null)
-            {
-                return false;
-            }
+            if (containingContainingNamespace == null) return false;
 
             return containingContainingNamespace.Name == "SharpSwift"
                    && containingNamespace.Name == "Attributes"
-                   && (expectingName == null || symbolInfo.Symbol.ContainingSymbol.Name == expectingName);
+                   && (expectingName == null || symbol.ContainingSymbol.Name == expectingName);
         }
 
         /// <summary>
