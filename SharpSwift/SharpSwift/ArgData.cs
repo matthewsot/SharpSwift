@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SharpSwift
 {
@@ -19,8 +15,14 @@ namespace SharpSwift
         /// </summary>
         public string InputPath { get; set; }
 
+        /// <summary>
+        /// Boolean indicating whether to indent the output
+        /// </summary>
         public bool Indent { get; set; }
 
+        /// <summary>
+        /// Path to the output .swift file
+        /// </summary>
         public string OutputPath { get; set; }
 
         public ArgData(string[] args)
@@ -90,15 +92,8 @@ namespace SharpSwift
                 return "";
             }
 
-            foreach (var file in Directory.GetFiles(path))
-            {
-                if (file.EndsWith(".sln"))
-                {
-                    return file;
-                }
-            }
-
-            return FindSolution((new DirectoryInfo(path)).Parent.FullName, levels - 1);
+            return Directory.GetFiles(path).FirstOrDefault(file => file.EndsWith(".sln")) ??
+                   FindSolution((new DirectoryInfo(path)).Parent.FullName, levels - 1);
         }
 
         public bool Clean()
