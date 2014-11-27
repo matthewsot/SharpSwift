@@ -10,7 +10,7 @@ namespace SharpSwift.Converters
         public static string IdentifierName(IdentifierNameSyntax node)
         {
             //Looks for an ExportAttribute
-            var symbol = model.GetSymbolInfo(node).Symbol;
+            var symbol = Model.GetSymbolInfo(node).Symbol;
             string nameToUse = null;
             if (symbol != null)
             {

@@ -39,7 +39,7 @@ namespace SharpSwift.Converters
         {
             //Name all the parameters
             //Thanks! http://stackoverflow.com/questions/24174602/get-constructor-declaration-from-objectcreationexpressionsyntax-with-roslyn/24191494#24191494
-            var symbol = model.GetSymbolInfo(node).Symbol as IMethodSymbol;
+            var symbol = Model.GetSymbolInfo(node).Symbol as IMethodSymbol;
 
             var newArgumentListArguments = new SeparatedSyntaxList<ArgumentSyntax>();
 

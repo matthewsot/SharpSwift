@@ -56,7 +56,7 @@ namespace SharpSwift
 
             var doc = GetDocumentFromSolution(solutionPath, path);
             var tree = doc.GetSyntaxTreeAsync().Result;
-            ConvertToSwift.model = doc.GetSemanticModelAsync().Result;
+            ConvertToSwift.Model = doc.GetSemanticModelAsync().Result;
 
             var root = (CompilationUnitSyntax)tree.GetRoot();
             var rootNamespace = root.Members.OfType<NamespaceDeclarationSyntax>().FirstOrDefault();

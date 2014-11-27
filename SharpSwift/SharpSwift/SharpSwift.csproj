@@ -73,6 +73,7 @@
     <Compile Include="Converters\LoopSyntaxParser.cs" />
     <Compile Include="Converters\ListSyntaxParser.cs" />
     <Compile Include="Converters\MemberDeclarationParser.cs" />
+    <Compile Include="Converters\MiscellaneousSyntaxParser.cs" />
     <Compile Include="Converters\NameSyntaxParser.cs" />
     <Compile Include="Converters\ParsesTypeAttribute.cs" />
     <Compile Include="Converters\InitializerSyntaxParser.cs" />

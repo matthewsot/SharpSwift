@@ -12,7 +12,7 @@ namespace SharpSwift.Converters
     {
         private static bool IsSharpSwiftAttribute(AttributeSyntax node, string expectingName)
         {
-            var symbolInfo = model.GetSymbolInfo(node.Name);
+            var symbolInfo = Model.GetSymbolInfo(node.Name);
 
             if(symbolInfo.Symbol == null)
             {
