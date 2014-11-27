@@ -2,9 +2,16 @@
 
 namespace SharpSwift
 {
-    internal class Indenter
+    internal static class Indenter
     {
-        public static string IndentDocument(string swift, string newLine = null, string indentWith = "\t")
+        /// <summary>
+        /// Indents a Swift file with everything inside { }s indented one level.
+        /// </summary>
+        /// <param name="swift">The Swift code to indent</param>
+        /// <param name="newLine">The newline character(s) to use. Defaults to Environment.NewLine</param>
+        /// <param name="indentWith">What character(s) to use to indent. Defaults to four spaces.</param>
+        /// <returns></returns>
+        public static string IndentDocument(string swift, string newLine = null, string indentWith = "    ")
         {
             if (newLine == null)
             {

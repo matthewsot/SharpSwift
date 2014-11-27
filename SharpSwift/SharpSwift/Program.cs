@@ -28,7 +28,6 @@ namespace SharpSwift
             }
 
             Console.WriteLine("Done.");
-            Console.ReadLine();
         }
 
         private static Document GetDocumentFromSolution(string solutionPath, string documentPath)
