@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        private static bool IsSharpSwiftAttribute(AttributeSyntax node, string expectingName)
+        /// <summary>
+        /// Detects whether an attribute is a certain SharpSwift-specific Attribute (like [ExportAs])
+        /// </summary>
+        /// <param name="attribute">The AttributeSyntax to check</param>
+        /// <param name="expectingName">The attribute name you're looking for, or null to match all SharpSwift attributes</param>
+        /// <returns>A boolean value representing whether it is or isn't the SharpSwift attribute</returns>
+        private static bool IsSharpSwiftAttribute(AttributeSyntax attribute, string expectingName = null)
         {
-            var symbolInfo = Model.GetSymbolInfo(node.Name);
+            var symbolInfo = Model.GetSymbolInfo(attribute.Name);
 
-            if(symbolInfo.Symbol == null)
+            if (symbolInfo.Symbol == null)
             {
                 return false;
             }
@@ -29,22 +30,27 @@ namespace SharpSwift.Converters
 
             return containingContainingNamespace.Name == "SharpSwift"
                    && containingNamespace.Name == "Attributes"
-                   && symbolInfo.Symbol.ContainingSymbol.Name == expectingName;
+                   && (expectingName == null || symbolInfo.Symbol.ContainingSymbol.Name == expectingName);
         }
 
+        /// <summary>
+        /// Converts a C# attribute, ignoring SharpSwift-specific attributes
+        /// </summary>
+        /// <param name="attribute">The attribute to convert</param>
+        /// <returns>Swift code representing the same attribute</returns>
         [ParsesType(typeof (AttributeSyntax))]
-        public static string AttributeSyntax(AttributeSyntax node)
+        public static string AttributeSyntax(AttributeSyntax attribute)
         {
-            var output = "@" + SyntaxNode(node.Name).TrimEnd('!');
+            var output = "@" + SyntaxNode(attribute.Name).TrimEnd('!');
 
-            if (IsSharpSwiftAttribute(node, "ExportAttribute"))
+            if (IsSharpSwiftAttribute(attribute))
             {
                 return "";
             }
 
-            if (node.ArgumentList != null)
+            if (attribute.ArgumentList != null)
             {
-                output += SyntaxNode(node.ArgumentList);
+                output += SyntaxNode(attribute.ArgumentList);
             }
 
             return output;
