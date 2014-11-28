@@ -10,7 +10,8 @@ namespace SharpSwift.Converters
         /// <param name="typeName">The C# type's identifier as a string</param>
         /// <param name="implyUnwrapped">If true, unwraps the type with an ! at the end</param>
         /// <returns>The Swift equivilant type as a string</returns>
-        private static string Type(string typeName, bool implyUnwrapped = true)
+        //TODO: figure out the unwrapping already
+        private static string Type(string typeName, bool implyUnwrapped = false)
         {
             switch (typeName)
             {
