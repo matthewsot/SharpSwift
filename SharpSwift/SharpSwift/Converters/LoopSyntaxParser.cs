@@ -1,76 +1,37 @@
-﻿using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        /// <summary>
+        /// Converts a foreach statement to Swift
+        /// </summary>
+        /// <example>foreach(var y in x) { }</example>
+        /// <param name="statement">The statement to convert</param>
+        /// <returns>The converted Swift statement</returns>
         [ParsesType(typeof(ForEachStatementSyntax))]
-        public static string ForEachStatement(ForEachStatementSyntax node)
+        public static string ForEachStatement(ForEachStatementSyntax statement)
         {
-            var output = "for ";
-            output += node.Identifier.Text; //TODO: should we do anything to this?
-            output += " in " + SyntaxNode(node.Expression) + " " + SyntaxNode(node.Statement);
-            return output;
+            return "for " + statement.Identifier.Text + " in " + SyntaxNode(statement.Expression) + " " +
+                   SyntaxNode(statement.Statement);
         }
 
+        /// <summary>
+        /// Converts a for statement to Swift
+        /// </summary>
+        /// <example>for(var i = 0;i == 2;i++) { }</example>
+        /// <param name="statement"></param>
+        /// <returns></returns>
         [ParsesType(typeof (ForStatementSyntax))]
-        public static string ForStatement(ForStatementSyntax node)
+        public static string ForStatement(ForStatementSyntax statement)
         {
             var output = "for ";
-            output += SyntaxNode(node.Declaration) + "; " + SyntaxNode(node.Condition) + "; " + //TODO: these semicolons should be handled in their syntaxParsers
-                      SyntaxNode(node.Incrementors.First()).TrimEnd(); //TODO: handle multiple incrementors
-            output += " " + SyntaxNode(node.Statement);
-            return output;
-        }
 
-        [ParsesType(typeof (SwitchLabelSyntax))]
-        public static string SwitchLabel(SwitchLabelSyntax node)
-        {
-            if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.CaseKeyword))
-            {
-                return "case " + SyntaxNode(node.Value) + ":" + NewLine;
-            }
-            if (node.CaseOrDefaultKeyword.IsKind(SyntaxKind.DefaultKeyword))
-            {
-                return "default:" + NewLine;
-            }
-            return "";
-        }
+            output += SyntaxNode(statement.Declaration) + "; " + SyntaxNode(statement.Condition) + "; " + //TODO: these semicolons should be handled in their syntaxParsers
+                      SyntaxNode(statement.Incrementors.First()).TrimEnd(); //TODO: handle multiple incrementors
 
-        [ParsesType(typeof (SwitchSectionSyntax))]
-        public static string SwitchSection(SwitchSectionSyntax node)
-        {
-            var output = "";
-            foreach (var label in node.Labels)
-            {
-                output += SyntaxNode(label);
-            }
-
-            foreach (var statement in node.Statements)
-            {
-                if (statement is BreakStatementSyntax)
-                {
-                    break;
-                }
-                output += "    " + SyntaxNode(statement); //TODO: fix the tabbing here with Indenter.cs
-            }
-            return output;
-        }
-
-        //TODO: this isn't in the right place
-        [ParsesType(typeof(SwitchStatementSyntax))]
-        public static string SwitchStatement(SwitchStatementSyntax node)
-        {
-            var output = "switch ";
-            output += SyntaxNode(node.Expression) + " {" + Environment.NewLine;
-            foreach (var sect in node.Sections)
-            {
-                output += SyntaxNode(sect);
-            }
-            output += "}" + Environment.NewLine;
+            output += " " + SyntaxNode(statement.Statement);
             return output;
         }
     }
