@@ -39,7 +39,7 @@ namespace SharpSwift.Converters
         [ParsesType(typeof(TypeParameterSyntax))]
         public static string TypeParameter(TypeParameterSyntax param)
         {
-            if (!(param.Parent.Parent is MethodDeclarationSyntax)) return param.Identifier.Text + constraint;
+            if (!(param.Parent.Parent is MethodDeclarationSyntax)) return param.Identifier.Text;
 
             var typeConstraints = ((MethodDeclarationSyntax)param.Parent.Parent).ConstraintClauses;
             var constraints = typeConstraints
