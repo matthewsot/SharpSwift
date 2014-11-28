@@ -8,6 +8,7 @@ namespace SharpSwift.Converters
         /// Returns the Swift equivilant for a C# type
         /// </summary>
         /// <param name="typeName">The C# type's identifier as a string</param>
+        /// <param name="implyUnwrapped">If true, unwraps the type with an ! at the end</param>
         /// <returns>The Swift equivilant type as a string</returns>
         private static string Type(string typeName, bool implyUnwrapped = true)
         {
@@ -27,16 +28,26 @@ namespace SharpSwift.Converters
             return typeName + (implyUnwrapped ? "!" : "");
         }
 
+        /// <summary>
+        /// Converts an array type to Swift
+        /// </summary>
+        /// <param name="array">The array type to convert</param>
+        /// <returns>The converted Swift type</returns>
         [ParsesType(typeof (ArrayTypeSyntax))]
-        public static string ArrayType(ArrayTypeSyntax node)
+        public static string ArrayType(ArrayTypeSyntax array)
         {
-            return "[" + SyntaxNode(node.ElementType) + "]"; //TODO: rankspecifiers
+            return "[" + SyntaxNode(array.ElementType) + "]"; //TODO: rankspecifiers
         }
 
+        /// <summary>
+        /// Converts a PredefinedType to Swift
+        /// </summary>
+        /// <param name="type">The type to convert</param>
+        /// <returns>The converted Swift type</returns>
         [ParsesType(typeof (PredefinedTypeSyntax))]
-        public static string PredefinedType(PredefinedTypeSyntax node)
+        public static string PredefinedType(PredefinedTypeSyntax type)
         {
-            return Type(node.Keyword.Text);
+            return Type(type.Keyword.Text);
         }
     }
 }
