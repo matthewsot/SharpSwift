@@ -6,12 +6,18 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
+        /// <summary>
+        /// Converts an IdentifierNameSyntax to Swift
+        /// </summary>
+        /// <param name="identifierName">The identifier to convert</param>
+        /// <returns>The Swift identifier</returns>
         [ParsesType(typeof(IdentifierNameSyntax))]
-        public static string IdentifierName(IdentifierNameSyntax node)
+        public static string IdentifierName(IdentifierNameSyntax identifierName)
         {
             //Looks for an ExportAttribute
-            var symbol = Model.GetSymbolInfo(node).Symbol;
+            var symbol = Model.GetSymbolInfo(identifierName).Symbol;
             string nameToUse = null;
+            
             if (symbol != null)
             {
                 //Check for an [Export()] attribute
@@ -22,53 +28,43 @@ namespace SharpSwift.Converters
                 }
             }
 
-            if(nameToUse != null)
-            {
-                return nameToUse;
-            }
-
-            return Type(node.Identifier.Text);
+            return nameToUse ?? Type(identifierName.Identifier.Text);
         }
 
+        /// <summary>
+        /// Converts a generic name to Swift
+        /// </summary>
+        /// <param name="name">The name to convert</param>
+        /// <returns>The converted Swift code</returns>
         [ParsesType(typeof (GenericNameSyntax))]
-        public static string GenericName(GenericNameSyntax node)
+        public static string GenericName(GenericNameSyntax name)
         {
             //TODO: replace the screwed up Action<>/Func<> conversions w/ DNSwift implementations
-            //Action<string, int> converts to (String, Int) -> Void
-            if (node.Identifier.Text == "Action")
+            switch (name.Identifier.Text)
             {
-                return ": (" + SyntaxNode(node.TypeArgumentList) + ") -> Void";
-            }
-            //Func<string, int, string> converts to (String, Int) -> String
-            if (node.Identifier.Text == "Func")
-            {
-                var output = ": (";
+                case "Action":
+                    //Action<string, int> converts to (String, Int) -> Void
+                    return ": (" + SyntaxNode(name.TypeArgumentList) + ") -> Void";
+                case "Func":
+                    //Func<string, int, string> converts to (String, Int) -> String
+                    var output = ": (";
 
-                //The last generic argument in Func<> is used as a return type
-                var allButLastArguments = node.TypeArgumentList.Arguments.Take(node.TypeArgumentList.Arguments.Count - 1);
+                    //The last generic argument in Func<> is used as a return type
+                    var allButLastArguments = name.TypeArgumentList.Arguments.Take(name.TypeArgumentList.Arguments.Count - 1);
 
-                output += string.Join(", ", allButLastArguments.Select(SyntaxNode));
+                    output += string.Join(", ", allButLastArguments.Select(SyntaxNode));
 
-                return output + ") -> " + SyntaxNode(node.TypeArgumentList.Arguments.Last());
-            }
-
-            if (node.Identifier.Text == "Unwrapped")
-            {
-                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!') + "!";
-            }
-
-            if (node.Identifier.Text == "Optional")
-            {
-                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!') + "?";
-            }
-
-            if (node.Identifier.Text == "AmbiguousWrapping")
-            {
-                return SyntaxNode(node.TypeArgumentList.Arguments.First()).TrimEnd('!');
+                    return output + ") -> " + SyntaxNode(name.TypeArgumentList.Arguments.Last());
+                case "Unwrapped":
+                    return SyntaxNode(name.TypeArgumentList.Arguments.First()).TrimEnd('!') + "!";
+                case "Optional":
+                    return SyntaxNode(name.TypeArgumentList.Arguments.First()).TrimEnd('!') + "?";
+                case "AmbiguousWrapping":
+                    return SyntaxNode(name.TypeArgumentList.Arguments.First()).TrimEnd('!');
             }
 
             //Something<another, thing> converts to Something<another, thing> :D
-            return Type(node.Identifier.Text) + SyntaxNode(node.TypeArgumentList);
+            return Type(name.Identifier.Text) + SyntaxNode(name.TypeArgumentList);
         }
     }
 }
