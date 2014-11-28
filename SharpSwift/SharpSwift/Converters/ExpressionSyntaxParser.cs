@@ -42,6 +42,17 @@ namespace SharpSwift.Converters
         }
 
         /// <summary>
+        /// Converts a prefix unary expression to Swift
+        /// </summary>
+        /// <param name="expression">The expression to convert</param>
+        /// <returns>The converted Swift expression</returns>
+        [ParsesType(typeof(PrefixUnaryExpressionSyntax))]
+        public static string PrefixUnaryExpression(PrefixUnaryExpressionSyntax expression)
+        {
+            return expression.OperatorToken.Text + SyntaxNode(expression.Operand);
+        }
+
+        /// <summary>
         /// Converts a member access expression to Swift
         /// </summary>
         /// <param name="expression">The expression to convert</param>
