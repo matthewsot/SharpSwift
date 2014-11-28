@@ -43,9 +43,9 @@ namespace SharpSwift.Converters
 
             var typeConstraints = ((MethodDeclarationSyntax)param.Parent.Parent).ConstraintClauses;
             var constraints = typeConstraints
-                .FirstOrDefault(constr => SyntaxNode(constr.Name) == param.Identifier.Text).Constraints;
+                .FirstOrDefault(constr => constr.Name.Identifier.Text == param.Identifier.Text).Constraints;
 
-            return param.Identifier.Text + ": " + string.Join(", ", constraints); //TODO: check if this is the right syntax for multiple constraints
+            return "<" + param.Identifier.Text + ": " + string.Join(", ", constraints) + ">"; //TODO: check if this is the right syntax for multiple constraints
         }
     }
 }
