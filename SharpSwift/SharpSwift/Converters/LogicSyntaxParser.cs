@@ -59,5 +59,38 @@ namespace SharpSwift.Converters
             return section.Statements.TakeWhile(statement => !(statement is BreakStatementSyntax)) // Swift doesn't use break; statements.
                 .Aggregate(output, (current, statement) => current + ("    " + SyntaxNode(statement))); //TODO: Handle case/switch indenting in Indenter.cs
         }
+
+        /// <summary>
+        /// Converts an if statement to Swift
+        /// </summary>
+        /// <example>if (x == y) { }</example>
+        /// <param name="statement">The statement to convert</param>
+        /// <returns>The converted Swift statement</returns>
+        [ParsesType(typeof(IfStatementSyntax))]
+        public static string IfStatement(IfStatementSyntax statement)
+        {
+            var output = statement.IfKeyword.Text + " (";
+            output += SyntaxNode(statement.Condition);
+            output += ")" + NewLine + SyntaxNode(statement.Statement);
+            if (statement.Else != null)
+            {
+                output += SyntaxNode(statement.Else);
+            }
+            return output;
+        }
+
+        /// <summary>
+        /// Converts an else clause to Swift
+        /// </summary>
+        /// <example>else { }</example>
+        /// <param name="clause">The else clause to convert</param>
+        /// <returns>The converted Swift clause</returns>
+        [ParsesType(typeof(ElseClauseSyntax))]
+        public static string ElseClause(ElseClauseSyntax clause)
+        {
+            var output = clause.ElseKeyword.Text + " ";
+            output += SyntaxNode(clause.Statement);
+            return output;
+        }
     }
 }

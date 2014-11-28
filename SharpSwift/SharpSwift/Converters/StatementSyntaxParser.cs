@@ -5,55 +5,43 @@ namespace SharpSwift.Converters
 {
     partial class ConvertToSwift
     {
-        //using(var something = new StreamReader()) { something }
+        /// <summary>
+        /// Converts a using statement to Swift
+        /// </summary>
+        /// <example>using(var something = new StreamReader()) { something }</example>
+        /// <param name="statement">The statement to convert</param>
+        /// <returns>The converted Swift statement</returns>
         [ParsesType(typeof(UsingStatementSyntax))]
-        public static string UsingStatement(UsingStatementSyntax node)
+        public static string UsingStatement(UsingStatementSyntax statement)
         {
-            var output = SyntaxNode(node.Declaration) + ";" + NewLine;
+            var output = SyntaxNode(statement.Declaration) + ";" + NewLine;
 
-            output += Block((BlockSyntax)node.Statement, false);
+            output += Block((BlockSyntax)statement.Statement, false);
 
             //Swift calls deinit when you make a variable nil
 
             output += string.Join("",
-                node.Declaration.Variables.Select(variable => variable.Identifier.Text + " = nil;" + NewLine));
+                statement.Declaration.Variables.Select(variable => variable.Identifier.Text + " = nil;" + NewLine));
 
             return output;
         }
 
-
+        /// <summary>
+        /// Converts a return statement to Swift
+        /// </summary>
+        /// <param name="statement">The statement to convert</param>
+        /// <returns>The converted Swift statement</returns>
         [ParsesType(typeof(ReturnStatementSyntax))]
-        public static string ReturnStatement(ReturnStatementSyntax node)
+        public static string ReturnStatement(ReturnStatementSyntax statement)
         {
             var output = "return";
 
-            if (node.Expression != null)
+            if (statement.Expression != null)
             {
-                output += " " + SyntaxNode(node.Expression);
+                output += " " + SyntaxNode(statement.Expression);
             }
 
-            return output + Semicolon(node.SemicolonToken);
-        }
-
-        [ParsesType(typeof(IfStatementSyntax))]
-        public static string IfStatement(IfStatementSyntax node)
-        {
-            var output = node.IfKeyword.Text + " (";
-            output += SyntaxNode(node.Condition);
-            output += ")" + NewLine + SyntaxNode(node.Statement);
-            if (node.Else != null)
-            {
-                output += SyntaxNode(node.Else);
-            }
-            return output;
-        }
-
-        [ParsesType(typeof(ElseClauseSyntax))]
-        public static string ElseClause(ElseClauseSyntax node)
-        {
-            var output = node.ElseKeyword.Text + " ";
-            output += SyntaxNode(node.Statement);
-            return output;
+            return output + Semicolon(statement.SemicolonToken);
         }
     }
 }
